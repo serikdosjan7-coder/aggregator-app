@@ -1,26 +1,132 @@
 @import "tailwindcss";
 
+/* ── Automotive Design System ─────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-bg:      #000000;   /* Pitch Black — page backgrounds */
+  --color-surface: #121212;   /* Matte Charcoal — cards, panels */
+  --color-accent:  #8B0000;   /* Dark Speedometer Red — primary actions */
+  --color-border:  #1A1A1A;   /* Border Dark — all visible borders */
+  --color-text:    #FFFFFF;   /* Pure White — primary text */
+  --color-muted:   #A0A0A0;   /* Mid Grey — secondary text, labels */
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+* { box-sizing: border-box; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
 }
+
+/* ── Utility: Card ────────────────────────────────────────────────────── */
+.automotive-card {
+  background: #121212;
+  border: 1px solid #1A1A1A;
+  border-radius: 4px;
+}
+
+/* ── Utility: Buttons ─────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: #8B0000;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  font-family: var(--font-inter, 'Inter', system-ui, sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 150ms, border-color 150ms;
+}
+.btn-primary:hover  { background: #A30000; }
+.btn-primary:active { background: #6B0000; }
+.btn-primary:disabled,
+.btn-primary[disabled] {
+  background: #3A0000;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: transparent;
+  color: #FFFFFF;
+  border: 1px solid #1A1A1A;
+  border-radius: 4px;
+  font-family: var(--font-inter, 'Inter', system-ui, sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 150ms, border-color 150ms;
+}
+.btn-secondary:hover  { background: #1A1A1A; border-color: #333333; }
+.btn-secondary:active { background: #0A0A0A; }
+
+/* ── Utility: Typography ──────────────────────────────────────────────── */
+.heading-auto {
+  font-family: var(--font-inter, 'Inter', system-ui, sans-serif);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #FFFFFF;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────────────────── */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── CSS spinner (loading states only — no animation library) ─────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #1A1A1A;
+  border-top-color: #8B0000;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ── Leaflet overrides (map page) ─────────────────────────────────────── */
+.leaflet-container {
+  background: #000000 !important;
+  font-family: var(--font-inter, 'Inter', system-ui, sans-serif);
+}
+.leaflet-control-zoom {
+  border: 1px solid #1A1A1A !important;
+  border-radius: 4px !important;
+  overflow: hidden;
+}
+.leaflet-control-zoom a {
+  background: #0A0A0A !important;
+  color: #FFFFFF !important;
+  border-bottom: 1px solid #1A1A1A !important;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  font-size: 18px !important;
+  transition: background-color 150ms !important;
+}
+.leaflet-control-zoom a:hover { background: #1A1A1A !important; }
+.leaflet-control-attribution {
+  background: #0A0A0A !important;
+  color: #A0A0A0 !important;
+  font-size: 10px !important;
+}
+.leaflet-control-attribution a { color: #A0A0A0 !important; }
