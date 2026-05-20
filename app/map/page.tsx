@@ -79,7 +79,9 @@ const MapView = dynamic(() => import("./MapView"), {
       </div>
     </div>
   ),
-})export default function MapPage() {
+}
+
+export default function MapPage() {
   const { t } = useI18n()
   const router = useRouter()
   const [mounted,setMounted] = useState(false)
@@ -424,3 +426,4 @@ const MapView = dynamic(() => import("./MapView"), {
     </div>
   )
 }
+
