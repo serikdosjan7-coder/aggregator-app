@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, User, AlertTriangle, Battery, Navigation, Clock, Star } from "lucide-react"
+import { ArrowLeft, User, TriangleAlert as AlertTriangle, Battery, Navigation, Clock, Star } from "lucide-react"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 import { useI18n } from "@/lib/i18n"
 import { VehicleIllustration } from "@/components/VehicleIllustration"
@@ -79,7 +79,7 @@ const MapView = dynamic(() => import("./MapView"), {
       </div>
     </div>
   ),
-}
+})
 
 export default function MapPage() {
   const { t } = useI18n()
