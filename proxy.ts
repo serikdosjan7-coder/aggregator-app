@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from "next/server"
 
 const PROTECTED = ["/dashboard", "/vehicles", "/profile"]
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Only check protected routes
