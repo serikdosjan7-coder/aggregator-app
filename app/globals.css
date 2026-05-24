@@ -2,18 +2,23 @@
 
 /* ── Automotive Design System ─────────────────────────────────────────── */
 :root {
-  --color-bg:      #000000;   /* Pitch Black — page backgrounds */
-  --color-surface: #121212;   /* Matte Charcoal — cards, panels */
-  --color-accent:  #8B0000;   /* Dark Speedometer Red — primary actions */
-  --color-border:  #1A1A1A;   /* Border Dark — all visible borders */
-  --color-text:    #FFFFFF;   /* Pure White — primary text */
-  --color-muted:   #A0A0A0;   /* Mid Grey — secondary text, labels */
+  --color-bg:        #040507;                  /* Deep Black — page backgrounds */
+  --color-surface:   rgba(15, 17, 21, 0.75);   /* Dark Glass — cards, panels */
+  --color-text:      #ffffff;                  /* Pure White — primary text */
+  --color-muted:     #8895a5;                  /* Steel Blue-Grey — secondary text */
+  --color-border:    rgba(255, 255, 255, 0.05); /* Subtle White — all visible borders */
+  --color-red:       #e8002b;                  /* Brand Red — primary actions */
+  --color-red-dim:   rgba(232, 0, 43, 0.08);   /* Brand Red Dim — active backgrounds */
+  --color-amber:     #f59e0b;                  /* Brand Amber — e-bike accent */
+  --color-amber-dim: rgba(245, 158, 11, 0.1);  /* Brand Amber Dim — active backgrounds */
+  --color-blue:      #00b0ff;                  /* Brand Blue — moped accent */
+  --color-blue-dim:  rgba(0, 176, 255, 0.08);  /* Brand Blue Dim — active backgrounds */
 }
 
 * { box-sizing: border-box; }
 
 body {
-  background: var(--color-bg);
+  background: var(--color-bg); /* #040507 via --color-bg */
   color: var(--color-text);
   font-family: var(--font-inter, -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif);
   -webkit-font-smoothing: antialiased;
@@ -22,9 +27,17 @@ body {
 
 /* ── Utility: Card ────────────────────────────────────────────────────── */
 .automotive-card {
-  background: #121212;
-  border: 1px solid #1A1A1A;
+  background: rgba(15, 17, 21, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 4px;
+}
+
+/* ── Utility: Glass Panel ─────────────────────────────────────────────── */
+.glass-panel {
+  background:              rgba(15, 17, 21, 0.75);
+  backdrop-filter:         blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border:                  1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* ── Utility: Buttons ─────────────────────────────────────────────────── */
@@ -34,8 +47,8 @@ body {
   justify-content: center;
   gap: 8px;
   padding: 12px 28px;
-  background: #8B0000;
-  color: #FFFFFF;
+  background: #e8002b;
+  color: #ffffff;
   border: none;
   border-radius: 4px;
   font-family: var(--font-inter, 'Inter', system-ui, sans-serif);
@@ -47,8 +60,8 @@ body {
   text-decoration: none;
   transition: background-color 150ms, border-color 150ms;
 }
-.btn-primary:hover  { background: #A30000; }
-.btn-primary:active { background: #6B0000; }
+.btn-primary:hover  { background: #ff1a3d; }
+.btn-primary:active { background: #c0001f; }
 .btn-primary:disabled,
 .btn-primary[disabled] {
   background: #3A0000;
@@ -75,7 +88,7 @@ body {
   text-decoration: none;
   transition: background-color 150ms, border-color 150ms;
 }
-.btn-secondary:hover  { background: #1A1A1A; border-color: #333333; }
+.btn-secondary:hover  { background: rgba(15, 17, 21, 0.75); border-color: rgba(255, 255, 255, 0.12); }
 .btn-secondary:active { background: #0A0A0A; }
 
 /* ── Utility: Typography ──────────────────────────────────────────────── */
@@ -98,7 +111,7 @@ body {
   width: 20px;
   height: 20px;
   border: 2px solid #1A1A1A;
-  border-top-color: #8B0000;
+  border-top-color: #e8002b;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }

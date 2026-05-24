@@ -19,7 +19,7 @@ export default function AuthPage() {
   useEffect(() => { setIsMounted(true) }, [])
 
   if (!isMounted) {
-    return <div style={{ background: '#000000', minHeight: '100vh' }} />
+    return <div style={{ background: '#040507', minHeight: '100vh' }} />
   }
 
   const supabase = createSupabaseBrowserClient()
@@ -94,9 +94,10 @@ export default function AuthPage() {
 
   return (
     <div
+      data-testid="auth-page"
       style={{
         minHeight: '100vh',
-        background: '#000000',
+        background: '#040507',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -106,20 +107,39 @@ export default function AuthPage() {
         position: 'relative',
       }}
     >
+      {/* Video background — TODO: Serik, change to your real video filename here */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        style={{
+          position: 'fixed',
+          top: 0, left: 0,
+          width: '100%', height: '100%',
+          objectFit: 'cover',
+          opacity: 0.18,
+          zIndex: 0,
+          pointerEvents: 'none',
+        }}
+      >
+        <source src="/city-night.mp4" type="video/mp4" />
+      </video>
       {/* Lang switcher */}
-      <div style={{ position: 'absolute', top: 20, right: 20 }}>
+      <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 1 }}>
         <LangSwitcher />
       </div>
 
       {/* ── Form card ── */}
       <div
+        className="glass-panel"
         style={{
           width: '100%',
           maxWidth: 400,
-          background: '#121212',
-          border: '1px solid #1A1A1A',
           borderRadius: 4,
           padding: '40px 32px',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
         {/* Wordmark */}
@@ -128,7 +148,7 @@ export default function AuthPage() {
             fontSize: 10,
             fontWeight: 700,
             letterSpacing: '0.25em',
-            color: '#8B0000',
+            color: '#e8002b',
             textTransform: 'uppercase',
             marginBottom: 24,
           }}
@@ -159,7 +179,7 @@ export default function AuthPage() {
               placeholder={t.auth.placeholder_email}
               required
               style={inputStyle}
-              onFocus={(e) => (e.currentTarget.style.borderColor = '#8B0000')}
+              onFocus={(e) => (e.currentTarget.style.borderColor = '#e8002b')}
               onBlur={(e) => (e.currentTarget.style.borderColor = '#1A1A1A')}
             />
           </div>
@@ -175,7 +195,7 @@ export default function AuthPage() {
               required
               minLength={6}
               style={inputStyle}
-              onFocus={(e) => (e.currentTarget.style.borderColor = '#8B0000')}
+              onFocus={(e) => (e.currentTarget.style.borderColor = '#e8002b')}
               onBlur={(e) => (e.currentTarget.style.borderColor = '#1A1A1A')}
             />
           </div>
@@ -190,7 +210,7 @@ export default function AuthPage() {
                   fontWeight: 700,
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
-                  color: '#8B0000',
+                  color: '#e8002b',
                   textDecoration: 'none',
                   transition: 'color 150ms',
                 }}
@@ -204,13 +224,13 @@ export default function AuthPage() {
           {error && (
             <div
               style={{
-                border: '1px solid #8B0000',
+                border: '1px solid #e8002b',
                 borderRadius: 4,
                 padding: '10px 14px',
                 color: '#FFFFFF',
                 fontSize: 13,
                 marginBottom: 16,
-                background: '#0A0000',
+                background: 'rgba(232,0,43,0.08)',
               }}
             >
               {error}
@@ -270,6 +290,8 @@ export default function AuthPage() {
           fontStyle: 'italic',
           letterSpacing: '0.04em',
           textAlign: 'center',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
         {t.auth.quote}

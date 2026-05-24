@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import {
   ArrowLeft, User, TriangleAlert as AlertTriangle, Battery,
   Navigation, Clock, Star, ChevronRight, MapPin, List, X,
+  Zap, Bike, Gauge,
 } from "lucide-react"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 import { useI18n } from "@/lib/i18n"
@@ -67,11 +68,20 @@ const MOCK: ScooterMarker[] = [
 ]
 
 /* ─── Type config (matches MapView) ──────────────────────────────────── */
-const TYPE_META: Record<TransportType, { label: string; bg: string; textColor: string }> = {
-  scooter: { label: "S", bg: "#8B0000", textColor: "#FFFFFF" },
-  ebike:   { label: "E", bg: "#B45309", textColor: "#FFFFFF" },
-  bike:    { label: "B", bg: "#FFFFFF", textColor: "#000000" },
-  moped:   { label: "M", bg: "#0F766E", textColor: "#FFFFFF" },
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const TYPE_META: Record<TransportType, { Icon: React.ComponentType<any>; bg: string; color: string }> = {
+  scooter: { Icon: Zap,   bg: "rgba(232,0,43,0.12)",    color: "#e8002b" },
+  ebike:   { Icon: Bike,  bg: "rgba(245,158,11,0.12)",  color: "#f59e0b" },
+  bike:    { Icon: Bike,  bg: "rgba(255,255,255,0.08)", color: "#ffffff" },
+  moped:   { Icon: Gauge, bg: "rgba(0,176,255,0.12)",   color: "#00b0ff" },
+}
+
+const TYPE_LABELS: Record<TransportType | "all", string> = {
+  all:     "All",
+  scooter: "Taycan Scooter",
+  ebike:   "E-Tron Bike",
+  bike:    "Bike",
+  moped:   "Urban Moped",
 }
 
 /* ─── Skeleton loaders ──────────────────────────────────────────────────── */
@@ -79,7 +89,7 @@ function SidebarSkeleton() {
   return (
     <div className="space-y-3 p-3">
       {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 p-3 rounded animate-pulse" style={{ background: "#121212", border: "1px solid #1A1A1A" }}>
+        <div key={i} className="flex items-center gap-3 p-3 rounded animate-pulse" style={{ background: "#121212", border: "1px solid rgba(255,255,255,0.05)" }}>
           <div className="rounded-full shrink-0" style={{ width: 36, height: 36, background: "#1A1A1A" }} />
           <div className="flex-1 space-y-2">
             <div className="rounded" style={{ height: 10, width: "60%", background: "#1A1A1A" }} />
@@ -94,7 +104,7 @@ function SidebarSkeleton() {
 
 function CardSkeleton() {
   return (
-    <div className="animate-pulse rounded p-3" style={{ background: "#121212", border: "1px solid #1A1A1A" }}>
+    <div className="animate-pulse rounded p-3" style={{ background: "#121212", border: "1px solid rgba(255,255,255,0.05)" }}>
       <div className="flex items-center gap-3 mb-3">
         <div className="rounded-full shrink-0" style={{ width: 32, height: 32, background: "#1A1A1A" }} />
         <div className="flex-1 space-y-2">
@@ -182,6 +192,7 @@ export default function MapPage() {
   const [reportSending, setReportSending] = useState(false)
   const [mobileTab, setMobileTab] = useState<"map" | "list">("map")
   const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [guestBannerDismissed, setGuestBannerDismissed] = useState(false)
   const isDesktop = useIsDesktop()
 
   const supabase = typeof window !== "undefined" ? createSupabaseBrowserClient() : null
@@ -319,8 +330,8 @@ export default function MapPage() {
         style={{
           width: sidebarWidth,
           minWidth: sidebarWidth,
-          background: "#0A0A0A",
-          borderRight: "1px solid #1A1A1A",
+          background: "rgba(15,17,21,0.75)",
+          borderRight: "1px solid rgba(255,255,255,0.05)",
           display: "flex",
           flexDirection: "column",
           overflow: "hidden",
@@ -328,7 +339,7 @@ export default function MapPage() {
         }}
       >
         {/* Search inside sidebar */}
-        <div style={{ padding: "12px 12px 8px", borderBottom: "1px solid #1A1A1A" }}>
+        <div style={{ padding: "12px 12px 8px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
           <input
             type="text"
             placeholder={t.map.search_placeholder}
@@ -336,28 +347,28 @@ export default function MapPage() {
             onChange={e => setSearchQuery(e.target.value)}
             style={{
               width: "100%", padding: "8px 12px", background: "#121212",
-              border: "1px solid #1A1A1A", borderRadius: 4, color: "#FFFFFF",
+              border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, color: "#FFFFFF",
               fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", outline: "none", fontFamily: "inherit",
             }}
-            onFocus={e => (e.currentTarget.style.borderColor = "#8B0000")}
+            onFocus={e => (e.currentTarget.style.borderColor = "#e8002b")}
             onBlur={e => (e.currentTarget.style.borderColor = "#1A1A1A")}
           />
         </div>
 
         {/* Filter pills */}
-        <div style={{ padding: "8px 12px", display: "flex", gap: 4, flexWrap: "wrap", borderBottom: "1px solid #1A1A1A" }}>
+        <div style={{ padding: "8px 12px", display: "flex", gap: 4, flexWrap: "wrap", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
           {(["all", "scooter", "ebike", "bike", "moped"] as const).map(tp => (
             <button key={tp} onClick={() => setTF(tp)}
               style={{
                 padding: "4px 10px", borderRadius: 4, fontSize: 10, fontWeight: 700,
                 letterSpacing: "0.08em", textTransform: "uppercase" as const,
-                border: "1px solid", borderColor: activeFilter === tp ? "#8B0000" : "#1A1A1A",
-                background: activeFilter === tp ? "#0A0000" : "#121212",
+                border: "1px solid", borderColor: activeFilter === tp ? "#e8002b" : "#1A1A1A",
+                background: activeFilter === tp ? "rgba(232,0,43,0.08)" : "#121212",
                 color: activeFilter === tp ? "#FFFFFF" : "#A0A0A0",
                 cursor: "pointer", transition: "border-color 150ms, color 150ms", whiteSpace: "nowrap" as const,
               }}
             >
-              {tp === "all" ? t.map.filter_all : t.map[`type_${tp}` as keyof typeof t.map]}
+              {TYPE_LABELS[tp]}
             </button>
           ))}
           <div style={{ width: 1, background: "#1A1A1A", margin: "0 2px", alignSelf: "stretch" }} />
@@ -366,8 +377,8 @@ export default function MapPage() {
               style={{
                 padding: "4px 10px", borderRadius: 4, fontSize: 10, fontWeight: 700,
                 letterSpacing: "0.08em", textTransform: "uppercase" as const,
-                border: "1px solid", borderColor: smartFilter === id ? "#8B0000" : "#1A1A1A",
-                background: smartFilter === id ? "#0A0000" : "#121212",
+                border: "1px solid", borderColor: smartFilter === id ? "#e8002b" : "#1A1A1A",
+                background: smartFilter === id ? "rgba(232,0,43,0.08)" : "#121212",
                 color: smartFilter === id ? "#FFFFFF" : "#A0A0A0",
                 cursor: "pointer", transition: "border-color 150ms, color 150ms", whiteSpace: "nowrap" as const,
               }}
@@ -389,7 +400,7 @@ export default function MapPage() {
                 {filtered.map(m => {
                   const meta = TYPE_META[m.type] ?? TYPE_META.scooter
                   const av = m.status === "available"
-                  const bc = m.battery > 60 ? "#22C55E" : m.battery > 30 ? "#D97706" : "#8B0000"
+                  const bc = m.battery > 60 ? "#22C55E" : m.battery > 30 ? "#D97706" : "#e8002b"
                   const isActive = selected?.id === m.id
                   return (
                     <button
@@ -398,8 +409,8 @@ export default function MapPage() {
                       style={{
                         display: "flex", alignItems: "center", gap: 10, width: "100%",
                         padding: "10px 10px", marginBottom: 4, borderRadius: 4, cursor: "pointer",
-                        background: isActive ? "#0A0000" : "#121212",
-                        border: `1px solid ${isActive ? "#8B0000" : "#1A1A1A"}`,
+                        background: isActive ? "rgba(232,0,43,0.08)" : "rgba(15,17,21,0.75)",
+                        border: `1px solid ${isActive ? "#e8002b" : "#1A1A1A"}`,
                         transition: "border-color 150ms, background 150ms", textAlign: "left",
                         fontFamily: "inherit",
                       }}
@@ -410,10 +421,8 @@ export default function MapPage() {
                       <div style={{
                         width: 36, height: 36, borderRadius: "50%", background: meta.bg,
                         display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                        fontSize: 13, fontWeight: 800, color: meta.textColor, letterSpacing: "-0.02em",
-                        fontFamily: "'Inter', system-ui, sans-serif",
                       }}>
-                        {meta.label}
+                        <meta.Icon size={16} color={meta.color} />
                       </div>
                       {/* Info */}
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -430,7 +439,7 @@ export default function MapPage() {
                         <p style={{ fontSize: 12, fontWeight: 800, color: bc }}>{m.battery}%</p>
                         <p style={{ fontSize: 10, color: "#A0A0A0" }}>{Math.round(m.pricePerHour / 60)}₸/m</p>
                       </div>
-                      <ChevronRight size={14} style={{ color: isActive ? "#8B0000" : "#333333", flexShrink: 0 }} />
+                      <ChevronRight size={14} style={{ color: isActive ? "#e8002b" : "#333333", flexShrink: 0 }} />
                     </button>
                   )
                 })}
@@ -440,8 +449,8 @@ export default function MapPage() {
         </div>
 
         {/* Sidebar footer stats */}
-        <div style={{ padding: "8px 12px", borderTop: "1px solid #1A1A1A", display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#8B0000", display: "inline-block" }} />
+        <div style={{ padding: "8px 12px", borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#e8002b", display: "inline-block" }} />
           <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", color: "#FFFFFF" }}>{availableCount} {t.map.available}</span>
           {source === "supabase" && <span style={{ fontSize: 9, color: "#A0A0A0" }}>· {t.map.live}</span>}
         </div>
@@ -451,19 +460,19 @@ export default function MapPage() {
 
   /* ─── Render ────────────────────────────────────────────────────────── */
   return (
-    <div suppressHydrationWarning style={{ height: "100vh", background: "#000000", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-      <style>{`@keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(139,0,0,0.5),0 0 40px rgba(139,0,0,0.2)}50%{box-shadow:0 0 40px rgba(139,0,0,0.9),0 0 80px rgba(139,0,0,0.4)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}`}</style>
+    <div suppressHydrationWarning data-testid="map-container" style={{ height: "100vh", background: "#040507", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      <style>{`@keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(232,0,43,0.5),0 0 40px rgba(232,0,43,0.2)}50%{box-shadow:0 0 40px rgba(232,0,43,0.9),0 0 80px rgba(232,0,43,0.4)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}`}</style>
 
       {/* ── Active ride bar ─────────────────────────────────────────── */}
       {activeRide && (
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 960, background: "#000000", borderTop: "2px solid #8B0000" }}>
-          <div style={{ height: 2, background: "linear-gradient(90deg,#8B0000,transparent)" }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 960, background: "#000000", borderTop: "2px solid #e8002b" }}>
+          <div style={{ height: 2, background: "linear-gradient(90deg,#e8002b,transparent)" }} />
           <div style={{ padding: "16px 20px 20px", maxWidth: 900, margin: "0 auto" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#8B0000", display: "inline-block", animation: "pulse-glow 1.5s ease-in-out infinite" }} />
+                <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#e8002b", display: "inline-block", animation: "pulse-glow 1.5s ease-in-out infinite" }} />
                 <div>
-                  <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.2em", color: "#8B0000", textTransform: "uppercase", marginBottom: 2 }}>{t.map.ride_active ?? "ACTIVE RIDE"}</p>
+                  <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.2em", color: "#e8002b", textTransform: "uppercase", marginBottom: 2 }}>{t.map.ride_active ?? "ACTIVE RIDE"}</p>
                   <p style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.04em" }}>{activeRide.name}</p>
                 </div>
               </div>
@@ -481,8 +490,8 @@ export default function MapPage() {
                 style={{
                   flex: 2, padding: "14px 24px", fontSize: 13, fontWeight: 800,
                   letterSpacing: "0.15em", textTransform: "uppercase",
-                  background: finishing ? "#3A0000" : "#8B0000", color: "#FFFFFF",
-                  border: "1px solid #8B0000", borderRadius: 9999,
+                  background: finishing ? "#3A0000" : "#e8002b", color: "#FFFFFF",
+                  border: "1px solid #e8002b", borderRadius: 9999,
                   cursor: finishing ? "not-allowed" : "pointer", fontFamily: "inherit",
                   animation: finishing ? "none" : "pulse-glow 1.5s ease-in-out infinite",
                   opacity: finishing ? 0.7 : 1,
@@ -496,8 +505,8 @@ export default function MapPage() {
       )}
 
       {/* ── Top bar ─────────────────────────────────────────────────── */}
-      <header style={{ height: 52, background: "#0A0A0A", borderBottom: "1px solid #1A1A1A", display: "flex", alignItems: "center", padding: "0 12px", gap: 8, flexShrink: 0, zIndex: 900 }}>
-        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", background: "#121212", border: "1px solid #1A1A1A", borderRadius: 4, color: "#FFFFFF", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none" }}>
+      <header style={{ height: 52, background: "rgba(15,17,21,0.75)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", alignItems: "center", padding: "0 12px", gap: 8, flexShrink: 0, zIndex: 900 }}>
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", background: "#121212", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, color: "#FFFFFF", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none" }}>
           <ArrowLeft size={13} strokeWidth={1.5} />{t.map.back}
         </Link>
 
@@ -506,7 +515,7 @@ export default function MapPage() {
         <button onClick={() => setSidebarOpen(v => !v)}
           style={{
             display: "flex", alignItems: "center", gap: 5, padding: "6px 10px",
-            background: "#121212", border: "1px solid #1A1A1A", borderRadius: 4,
+            background: "#121212", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4,
             color: "#A0A0A0", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
             textTransform: "uppercase", cursor: "pointer", fontFamily: "inherit",
           }}
@@ -517,41 +526,64 @@ export default function MapPage() {
 
         <div style={{ flex: 1 }} />
 
-        <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 10px", background: "#121212", border: "1px solid #1A1A1A", borderRadius: 4, whiteSpace: "nowrap" }}>
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#8B0000", display: "inline-block" }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 10px", background: "#121212", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, whiteSpace: "nowrap" }}>
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#e8002b", display: "inline-block" }} />
           <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.08em", color: "#FFFFFF" }}>{availableCount} {t.map.available}</span>
           {source === "supabase" && <span style={{ fontSize: 9, color: "#A0A0A0" }}>· {t.map.live}</span>}
         </div>
 
         {isAdmin && (
-          <Link href="/admin" style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 10px", background: "#0A0000", border: "1px solid #8B0000", borderRadius: 4, color: "#8B0000", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", flexShrink: 0 }}>Control</Link>
+          <Link href="/admin" style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 10px", background: "rgba(232,0,43,0.08)", border: "1px solid #e8002b", borderRadius: 4, color: "#e8002b", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", flexShrink: 0 }}>Control</Link>
         )}
 
         <button onClick={() => setReportOpen(true)}
           style={{
             display: "flex", alignItems: "center", gap: 5, padding: "6px 10px",
-            background: "#121212", border: "1px solid #1A1A1A", borderRadius: 4,
+            background: "#121212", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4,
             color: "#A0A0A0", fontSize: 10, fontWeight: 700, letterSpacing: "0.08em",
             textTransform: "uppercase", cursor: "pointer", flexShrink: 0, fontFamily: "inherit",
           }}
-          onMouseEnter={e => { e.currentTarget.style.borderColor = "#8B0000"; e.currentTarget.style.color = "#FFFFFF" }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = "#e8002b"; e.currentTarget.style.color = "#FFFFFF" }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = "#1A1A1A"; e.currentTarget.style.color = "#A0A0A0" }}
         >
           <AlertTriangle size={12} strokeWidth={1.5} />{t.map.report_issue}
         </button>
 
-        <button onClick={() => router.push("/profile")}
-          style={{
-            width: 32, height: 32, background: "#121212", border: "1px solid #1A1A1A",
-            borderRadius: 4, color: "#FFFFFF", cursor: "pointer", display: "flex",
-            alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0,
-          }}
-          onMouseEnter={e => (e.currentTarget.style.borderColor = "#8B0000")}
-          onMouseLeave={e => (e.currentTarget.style.borderColor = "#1A1A1A")}
-        >
-          {userInitial ?? <User size={14} strokeWidth={1.5} />}
-        </button>
+        {userId ? (
+          <button onClick={() => router.push("/profile")}
+            style={{
+              width: 32, height: 32, background: "rgba(15,17,21,0.75)", border: "1px solid rgba(255,255,255,0.05)",
+              borderRadius: 4, color: "#FFFFFF", cursor: "pointer", display: "flex",
+              alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0,
+            }}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = "#e8002b")}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)")}
+          >
+            {userInitial ?? <User size={14} strokeWidth={1.5} />}
+          </button>
+        ) : (
+          <Link href="/auth" style={{
+            padding: "6px 12px", fontSize: 11, fontWeight: 700, letterSpacing: "0.08em",
+            textTransform: "uppercase", color: "#e8002b", textDecoration: "none",
+            border: "1px solid rgba(232,0,43,0.3)", borderRadius: 4,
+            background: "rgba(232,0,43,0.06)", flexShrink: 0,
+          }}>
+            Sign In →
+          </Link>
+        )}
       </header>
+
+      {/* ── Guest banner ────────────────────────────────────────────── */}
+      {!userId && !guestBannerDismissed && (
+        <div style={{
+          background: "rgba(232,0,43,0.06)", borderBottom: "1px solid rgba(232,0,43,0.2)",
+          padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between",
+          fontSize: 11, color: "#A0A0A0", letterSpacing: "0.04em", flexShrink: 0,
+        }}>
+          <span>Explore the map freely.{" "}<Link href="/auth" style={{ color: "#e8002b", textDecoration: "none", fontWeight: 700 }}>Sign in to ride.</Link></span>
+          <button onClick={() => setGuestBannerDismissed(true)} style={{ background: "transparent", border: "none", color: "#A0A0A0", cursor: "pointer", fontSize: 14, lineHeight: 1, padding: "0 4px" }}>×</button>
+        </div>
+      )}
 
       {/* ── Body: Sidebar + Map ─────────────────────────────────────── */}
       <div style={{ flex: 1, display: "flex", overflow: "hidden", position: "relative" }}>
@@ -574,35 +606,35 @@ export default function MapPage() {
           style={{
             position: "absolute", inset: 0, zIndex: 900,
             display: "flex",
-            flexDirection: "column", background: "#0A0A0A",
+            flexDirection: "column", background: "rgba(15,17,21,0.75)",
           }}
         >
           {/* Mobile search + filters */}
-          <div style={{ padding: "10px 12px 6px", borderBottom: "1px solid #1A1A1A" }}>
+          <div style={{ padding: "10px 12px 6px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
             <input
               type="text" placeholder={t.map.search_placeholder}
               value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
               style={{
                 width: "100%", padding: "8px 12px", background: "#121212",
-                border: "1px solid #1A1A1A", borderRadius: 4, color: "#FFFFFF",
+                border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, color: "#FFFFFF",
                 fontSize: 12, fontWeight: 600, letterSpacing: "0.08em", outline: "none", fontFamily: "inherit",
               }}
-              onFocus={e => (e.currentTarget.style.borderColor = "#8B0000")}
+              onFocus={e => (e.currentTarget.style.borderColor = "#e8002b")}
               onBlur={e => (e.currentTarget.style.borderColor = "#1A1A1A")}
             />
           </div>
-          <div style={{ padding: "6px 10px", display: "flex", gap: 4, flexWrap: "wrap", borderBottom: "1px solid #1A1A1A" }}>
+          <div style={{ padding: "6px 10px", display: "flex", gap: 4, flexWrap: "wrap", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
             {(["all", "scooter", "ebike", "bike", "moped"] as const).map(tp => (
               <button key={tp} onClick={() => setTF(tp)}
                 style={{
                   padding: "4px 8px", borderRadius: 4, fontSize: 9, fontWeight: 700,
                   letterSpacing: "0.08em", textTransform: "uppercase" as const,
-                  border: "1px solid", borderColor: activeFilter === tp ? "#8B0000" : "#1A1A1A",
-                  background: activeFilter === tp ? "#0A0000" : "#121212",
+                  border: "1px solid", borderColor: activeFilter === tp ? "#e8002b" : "#1A1A1A",
+                  background: activeFilter === tp ? "rgba(232,0,43,0.08)" : "#121212",
                   color: activeFilter === tp ? "#FFFFFF" : "#A0A0A0", cursor: "pointer",
                 }}
               >
-                {tp === "all" ? t.map.filter_all : t.map[`type_${tp}` as keyof typeof t.map]}
+                {TYPE_LABELS[tp]}
               </button>
             ))}
           </div>
@@ -617,12 +649,12 @@ export default function MapPage() {
                 {filtered.map(m => {
                   const meta = TYPE_META[m.type] ?? TYPE_META.scooter
                   const av = m.status === "available"
-                  const bc = m.battery > 60 ? "#22C55E" : m.battery > 30 ? "#D97706" : "#8B0000"
+                  const bc = m.battery > 60 ? "#22C55E" : m.battery > 30 ? "#D97706" : "#e8002b"
                   return (
                     <button key={m.id} onClick={() => handleSidebarSelect(m)}
                       style={{
                         display: "flex", flexDirection: "column", gap: 8, padding: 12,
-                        background: "#121212", border: "1px solid #1A1A1A", borderRadius: 4,
+                        background: "#121212", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4,
                         cursor: "pointer", textAlign: "left", fontFamily: "inherit",
                         transition: "border-color 150ms",
                       }}
@@ -633,10 +665,8 @@ export default function MapPage() {
                         <div style={{
                           width: 32, height: 32, borderRadius: "50%", background: meta.bg,
                           display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                          fontSize: 12, fontWeight: 800, color: meta.textColor,
-                          fontFamily: "'Inter', system-ui, sans-serif",
                         }}>
-                          {meta.label}
+                          <meta.Icon size={14} color={meta.color} />
                         </div>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <p style={{ fontSize: 13, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.02em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{m.name}</p>
@@ -665,8 +695,8 @@ export default function MapPage() {
             style={{
               padding: "8px 14px", borderRadius: 4, fontSize: 10, fontWeight: 700,
               letterSpacing: "0.08em", textTransform: "uppercase", border: "1px solid",
-              borderColor: mobileTab === "map" ? "#8B0000" : "#1A1A1A",
-              background: mobileTab === "map" ? "#0A0000" : "#0A0A0A",
+              borderColor: mobileTab === "map" ? "#e8002b" : "#1A1A1A",
+              background: mobileTab === "map" ? "rgba(232,0,43,0.08)" : "#0A0A0A",
               color: mobileTab === "map" ? "#FFFFFF" : "#A0A0A0",
               cursor: "pointer", display: "flex", alignItems: "center", gap: 5, fontFamily: "inherit",
             }}
@@ -677,8 +707,8 @@ export default function MapPage() {
             style={{
               padding: "8px 14px", borderRadius: 4, fontSize: 10, fontWeight: 700,
               letterSpacing: "0.08em", textTransform: "uppercase", border: "1px solid",
-              borderColor: mobileTab === "list" ? "#8B0000" : "#1A1A1A",
-              background: mobileTab === "list" ? "#0A0000" : "#0A0A0A",
+              borderColor: mobileTab === "list" ? "#e8002b" : "#1A1A1A",
+              background: mobileTab === "list" ? "rgba(232,0,43,0.08)" : "#0A0A0A",
               color: mobileTab === "list" ? "#FFFFFF" : "#A0A0A0",
               cursor: "pointer", display: "flex", alignItems: "center", gap: 5, fontFamily: "inherit",
             }}
@@ -692,28 +722,28 @@ export default function MapPage() {
       {/* ── Detail panel (selected vehicle) ──────────────────────────── */}
       {selected && !activeRide && (() => {
         const v = selected
-        const bc = v.battery > 60 ? "#22C55E" : v.battery > 30 ? "#D97706" : "#8B0000"
+        const bc = v.battery > 60 ? "#22C55E" : v.battery > 30 ? "#D97706" : "#e8002b"
         const rng = Math.round(v.battery * 0.6)
         const pm = Math.round(v.pricePerHour / 60)
         const av = v.status === "available"
         return (
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 950, background: "#0A0A0A", borderTop: "1px solid #1A1A1A" }}>
-            <div style={{ height: 2, background: "linear-gradient(90deg,#8B0000,transparent)" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 950, background: "rgba(15,17,21,0.75)", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+            <div style={{ height: 2, background: "linear-gradient(90deg,#e8002b,transparent)" }} />
             <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", maxWidth: 900, margin: "0 auto" }}>
-              <div style={{ padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid #1A1A1A", background: "rgba(139,0,0,0.03)", minWidth: 160 }}>
+              <div style={{ padding: "20px 24px", display: "flex", alignItems: "center", justifyContent: "center", borderRight: "1px solid rgba(255,255,255,0.05)", background: "rgba(232,0,43,0.03)", minWidth: 160 }}>
                 <VehicleIllustration type={v.type} size={130} color={av ? "#FFFFFF" : "#555555"} />
               </div>
               <div style={{ padding: "18px 20px 20px", display: "flex", flexDirection: "column", gap: 12 }}>
                 <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
                   <div style={{ minWidth: 0 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                      <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.2em", color: "#8B0000", textTransform: "uppercase" }}>{t.map[`type_${v.type}` as keyof typeof t.map]}</p>
+                      <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.2em", color: "#e8002b", textTransform: "uppercase" }}>{t.map[`type_${v.type}` as keyof typeof t.map]}</p>
                       {v.isVerified && <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.1em", color: "#22C55E", textTransform: "uppercase", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 2, padding: "1px 5px" }}>{t.map.panel_verified}</span>}
                     </div>
                     <p style={{ fontSize: 20, fontWeight: 700, letterSpacing: "0.02em", color: "#FFFFFF", textTransform: "uppercase", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{v.name}</p>
                     <p style={{ fontSize: 11, color: "#A0A0A0", marginTop: 2 }}>{v.provider}</p>
                   </div>
-                  <button onClick={() => setSelected(null)} style={{ width: 28, height: 28, flexShrink: 0, background: "transparent", border: "1px solid #1A1A1A", borderRadius: 4, color: "#A0A0A0", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }} onMouseEnter={e => (e.currentTarget.style.borderColor = "#8B0000")} onMouseLeave={e => (e.currentTarget.style.borderColor = "#1A1A1A")}>&#x2715;</button>
+                  <button onClick={() => setSelected(null)} style={{ width: 28, height: 28, flexShrink: 0, background: "transparent", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, color: "#A0A0A0", fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }} onMouseEnter={e => (e.currentTarget.style.borderColor = "#e8002b")} onMouseLeave={e => (e.currentTarget.style.borderColor = "#1A1A1A")}>&#x2715;</button>
                 </div>
                 <div style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 80 }}>
@@ -742,20 +772,20 @@ export default function MapPage() {
                 </div>
                 <div style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 4 }}>
                   {isBooked ? (
-                    <button onClick={cancelBooking} style={{ flex: 1, padding: "11px 20px", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", background: "transparent", color: "#8B0000", border: "1px solid #8B0000", borderRadius: 9999, cursor: "pointer", fontFamily: "inherit" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(139,0,0,0.1)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                    <button onClick={cancelBooking} style={{ flex: 1, padding: "11px 20px", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", background: "transparent", color: "#e8002b", border: "1px solid #e8002b", borderRadius: 9999, cursor: "pointer", fontFamily: "inherit" }} onMouseEnter={e => (e.currentTarget.style.background = "rgba(232,0,43,0.1)")} onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
                       {t.map.btn_cancel_booking} &middot; {fmtCD(bookingTime)}
                     </button>
                   ) : av ? (
                     <>
-                      <button onClick={() => reserveVehicle(v)} style={{ flex: 1, padding: "11px 16px", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", background: "rgba(255,255,255,0.04)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 9999, cursor: "pointer", fontFamily: "inherit" }} onMouseEnter={e => { e.currentTarget.style.borderColor = "#8B0000"; e.currentTarget.style.background = "rgba(139,0,0,0.08)" }} onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)" }}>
+                      <button onClick={() => reserveVehicle(v)} style={{ flex: 1, padding: "11px 16px", fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", background: "rgba(255,255,255,0.04)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", color: "#FFFFFF", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 9999, cursor: "pointer", fontFamily: "inherit" }} onMouseEnter={e => { e.currentTarget.style.borderColor = "#e8002b"; e.currentTarget.style.background = "rgba(232,0,43,0.08)" }} onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)" }}>
                         {t.map.btn_book_reserve}
                       </button>
-                      <button onClick={() => startRide(v)} style={{ flex: 2, padding: "12px 24px", fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", background: "#8B0000", color: "#FFFFFF", border: "1px solid #8B0000", borderRadius: 9999, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 0 20px rgba(139,0,0,0.4),0 0 40px rgba(139,0,0,0.15)" }} onMouseEnter={e => { e.currentTarget.style.background = "#A30000"; e.currentTarget.style.boxShadow = "0 0 32px rgba(139,0,0,0.6),0 0 60px rgba(139,0,0,0.25)" }} onMouseLeave={e => { e.currentTarget.style.background = "#8B0000"; e.currentTarget.style.boxShadow = "0 0 20px rgba(139,0,0,0.4),0 0 40px rgba(139,0,0,0.15)" }}>
+                      <button onClick={() => startRide(v)} style={{ flex: 2, padding: "12px 24px", fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", background: "#e8002b", color: "#FFFFFF", border: "1px solid #e8002b", borderRadius: 9999, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 0 20px rgba(232,0,43,0.4),0 0 40px rgba(232,0,43,0.15)" }} onMouseEnter={e => { e.currentTarget.style.background = "#A30000"; e.currentTarget.style.boxShadow = "0 0 32px rgba(139,0,0,0.6),0 0 60px rgba(139,0,0,0.25)" }} onMouseLeave={e => { e.currentTarget.style.background = "#e8002b"; e.currentTarget.style.boxShadow = "0 0 20px rgba(232,0,43,0.4),0 0 40px rgba(232,0,43,0.15)" }}>
                         {t.map.btn_start_ride}
                       </button>
                     </>
                   ) : (
-                    <button disabled style={{ flex: 1, padding: "12px 24px", fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", background: "#1A1A1A", color: "#555555", border: "1px solid #1A1A1A", borderRadius: 9999, cursor: "not-allowed", fontFamily: "inherit" }}>
+                    <button disabled style={{ flex: 1, padding: "12px 24px", fontSize: 12, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", background: "#1A1A1A", color: "#555555", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 9999, cursor: "not-allowed", fontFamily: "inherit" }}>
                       {t.map.btn_unavailable}
                     </button>
                   )}
@@ -768,8 +798,8 @@ export default function MapPage() {
 
       {/* ── Active booking bar ─────────────────────────────────────── */}
       {activeBooking && !selected && !activeRide && (
-        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 940, background: "#0A0000", borderTop: "1px solid #8B0000", padding: "14px 20px", display: "flex", alignItems: "center", gap: 16 }}>
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#8B0000", display: "inline-block", flexShrink: 0 }} />
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 940, background: "rgba(232,0,43,0.08)", borderTop: "1px solid #e8002b", padding: "14px 20px", display: "flex", alignItems: "center", gap: 16 }}>
+          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#e8002b", display: "inline-block", flexShrink: 0 }} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <p style={{ fontSize: 10, letterSpacing: "0.12em", color: "#A0A0A0", textTransform: "uppercase", marginBottom: 2 }}>{t.map.booking_active}</p>
             <p style={{ fontSize: 14, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.04em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{activeBooking.name}</p>
@@ -783,17 +813,17 @@ export default function MapPage() {
       {reportOpen && (
         <>
           <div onClick={() => setReportOpen(false)} style={{ position: "absolute", inset: 0, zIndex: 1050, background: "rgba(0,0,0,0.75)" }} />
-          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", zIndex: 1060, width: "min(420px,calc(100vw - 32px))", background: "#121212", border: "1px solid #1A1A1A", borderRadius: 4, padding: "28px 24px" }}>
+          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", zIndex: 1060, width: "min(420px,calc(100vw - 32px))", background: "#121212", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, padding: "28px 24px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
               <div>
-                <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.2em", color: "#8B0000", textTransform: "uppercase", marginBottom: 4 }}>RideHub</p>
+                <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.2em", color: "#e8002b", textTransform: "uppercase", marginBottom: 4 }}>RideHub</p>
                 <h2 style={{ fontSize: 16, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "#FFFFFF" }}>{t.map.report_title}</h2>
               </div>
-              <button onClick={() => setReportOpen(false)} style={{ width: 28, height: 28, background: "transparent", border: "1px solid #1A1A1A", borderRadius: 4, color: "#A0A0A0", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }} onMouseEnter={e => (e.currentTarget.style.borderColor = "#8B0000")} onMouseLeave={e => (e.currentTarget.style.borderColor = "#1A1A1A")}>&#x2715;</button>
+              <button onClick={() => setReportOpen(false)} style={{ width: 28, height: 28, background: "transparent", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, color: "#A0A0A0", fontSize: 14, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit" }} onMouseEnter={e => (e.currentTarget.style.borderColor = "#e8002b")} onMouseLeave={e => (e.currentTarget.style.borderColor = "#1A1A1A")}>&#x2715;</button>
             </div>
             <div style={{ marginBottom: 14 }}>
               <label style={{ display: "block", fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "#A0A0A0", marginBottom: 6 }}>{t.map.report_type}</label>
-              <select value={reportType} onChange={e => setReportType(e.target.value)} style={{ width: "100%", padding: "9px 12px", background: "#0A0A0A", border: "1px solid #1A1A1A", borderRadius: 4, color: "#FFFFFF", fontSize: 12, outline: "none", fontFamily: "inherit", cursor: "pointer" }} onFocus={e => (e.currentTarget.style.borderColor = "#8B0000")} onBlur={e => (e.currentTarget.style.borderColor = "#1A1A1A")}>
+              <select value={reportType} onChange={e => setReportType(e.target.value)} style={{ width: "100%", padding: "9px 12px", background: "rgba(15,17,21,0.75)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, color: "#FFFFFF", fontSize: 12, outline: "none", fontFamily: "inherit", cursor: "pointer" }} onFocus={e => (e.currentTarget.style.borderColor = "#e8002b")} onBlur={e => (e.currentTarget.style.borderColor = "#1A1A1A")}>
                 <option value="battery">{t.map.report_type_battery}</option>
                 <option value="damage">{t.map.report_type_damage}</option>
                 <option value="location">{t.map.report_type_location}</option>
@@ -802,11 +832,11 @@ export default function MapPage() {
             </div>
             <div style={{ marginBottom: 14 }}>
               <label style={{ display: "block", fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "#A0A0A0", marginBottom: 6 }}>{t.map.report_vehicle}</label>
-              <input type="text" value={reportVehicle} onChange={e => setReportVehicle(e.target.value)} placeholder={selected?.name ?? "e.g. Xiaomi Pro 2"} style={{ width: "100%", padding: "9px 12px", background: "#0A0A0A", border: "1px solid #1A1A1A", borderRadius: 4, color: "#FFFFFF", fontSize: 12, outline: "none", fontFamily: "inherit", boxSizing: "border-box" }} onFocus={e => (e.currentTarget.style.borderColor = "#8B0000")} onBlur={e => (e.currentTarget.style.borderColor = "#1A1A1A")} />
+              <input type="text" value={reportVehicle} onChange={e => setReportVehicle(e.target.value)} placeholder={selected?.name ?? "e.g. Xiaomi Pro 2"} style={{ width: "100%", padding: "9px 12px", background: "rgba(15,17,21,0.75)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, color: "#FFFFFF", fontSize: 12, outline: "none", fontFamily: "inherit", boxSizing: "border-box" }} onFocus={e => (e.currentTarget.style.borderColor = "#e8002b")} onBlur={e => (e.currentTarget.style.borderColor = "#1A1A1A")} />
             </div>
             <div style={{ marginBottom: 20 }}>
               <label style={{ display: "block", fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "#A0A0A0", marginBottom: 6 }}>{t.map.report_message}</label>
-              <textarea value={reportMessage} onChange={e => setReportMessage(e.target.value)} placeholder={t.map.report_placeholder} rows={3} style={{ width: "100%", padding: "9px 12px", background: "#0A0A0A", border: "1px solid #1A1A1A", borderRadius: 4, color: "#FFFFFF", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} onFocus={e => (e.currentTarget.style.borderColor = "#8B0000")} onBlur={e => (e.currentTarget.style.borderColor = "#1A1A1A")} />
+              <textarea value={reportMessage} onChange={e => setReportMessage(e.target.value)} placeholder={t.map.report_placeholder} rows={3} style={{ width: "100%", padding: "9px 12px", background: "rgba(15,17,21,0.75)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, color: "#FFFFFF", fontSize: 12, outline: "none", resize: "vertical", fontFamily: "inherit", boxSizing: "border-box" }} onFocus={e => (e.currentTarget.style.borderColor = "#e8002b")} onBlur={e => (e.currentTarget.style.borderColor = "#1A1A1A")} />
             </div>
             <button onClick={submitReport} disabled={reportSending || !reportMessage.trim()} className="btn-primary" style={{ width: "100%", padding: "12px", fontSize: 12 }}>
               {reportSending ? t.map.report_submitting : t.map.report_submit}
@@ -818,7 +848,7 @@ export default function MapPage() {
       {/* ── Toast ────────────────────────────────────────────────────── */}
       {toast && (
         <div style={{ position: "absolute", top: 14, left: "50%", transform: "translateX(-50%)", zIndex: 1100, pointerEvents: "none" }}>
-          <div style={{ padding: "8px 18px", background: "#121212", border: "1px solid #1A1A1A", borderRadius: 4, color: "#FFFFFF", fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap" }}>{toast}</div>
+          <div style={{ padding: "8px 18px", background: "#121212", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, color: "#FFFFFF", fontSize: 12, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap" }}>{toast}</div>
         </div>
       )}
     </div>

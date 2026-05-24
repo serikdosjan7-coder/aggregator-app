@@ -21,8 +21,6 @@ interface RideRecord {
 
 /* ─── Shared styles ──────────────────────────────────────────────────────── */
 const cardStyle: React.CSSProperties = {
-  background: "#121212",
-  border: "1px solid #1A1A1A",
   borderRadius: 4,
 }
 
@@ -206,15 +204,27 @@ export default function ProfilePage() {
         @media (max-width: 480px) {
           .stats-grid { grid-template-columns: 1fr 1fr !important; }
           .stats-grid > div:nth-child(2) { border-right: none !important; }
-          .stats-grid > div:nth-child(3) { border-top: 1px solid #1A1A1A; grid-column: 1 / -1; }
+          .stats-grid > div:nth-child(3) { border-top: 1px solid rgba(255,255,255,0.05); grid-column: 1 / -1; }
           .history-grid { grid-template-columns: 1fr 1fr 1fr !important; }
           .history-grid .col-machine { display: none; }
           .history-grid .col-vehicle { display: none; }
         }
       `}</style>
 
-      <div style={{ minHeight: "100vh", background: "#000000", color: "#FFFFFF", overflowX: "hidden" }}>
-        <div style={{ maxWidth: 640, margin: "0 auto", padding: "0 0 64px" }}>
+      <div data-testid="profile-page" style={{ minHeight: "100vh", background: "#040507", color: "#FFFFFF", overflowX: "hidden", position: "relative" }}>
+        {/* Video background — TODO: Serik, change to your real video filename here */}
+        <video
+          autoPlay muted loop playsInline
+          style={{
+            position: "fixed", top: 0, left: 0,
+            width: "100%", height: "100%",
+            objectFit: "cover", opacity: 0.12,
+            zIndex: 0, pointerEvents: "none",
+          }}
+        >
+          <source src="/city-night.mp4" type="video/mp4" />
+        </video>
+        <div style={{ maxWidth: 640, margin: "0 auto", padding: "0 0 64px", position: "relative", zIndex: 1 }}>
 
           {/* Top nav */}
           <div style={{
@@ -224,8 +234,8 @@ export default function ProfilePage() {
             <Link href="/map" style={{
               display: "flex", alignItems: "center", gap: 6,
               padding: "8px 14px",
-              background: "#0A0A0A",
-              border: "1px solid #1A1A1A",
+              background: "rgba(15,17,21,0.75)",
+              border: "1px solid rgba(255,255,255,0.05)",
               borderRadius: 4,
               color: "#FFFFFF", fontSize: 11, fontWeight: 700,
               letterSpacing: "0.08em", textTransform: "uppercase",
@@ -236,7 +246,7 @@ export default function ProfilePage() {
               {t.nav.map}
             </Link>
 
-            <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: "#8B0000", textTransform: "uppercase" }}>
+            <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: "#e8002b", textTransform: "uppercase" }}>
               {t.profile.wordmark}
             </p>
 
@@ -268,7 +278,7 @@ export default function ProfilePage() {
 
           {/* Stats row */}
           <div style={{ padding: "24px 20px 0" }}>
-            <div className="stats-grid" style={{ ...cardStyle, display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
+            <div className="stats-grid glass-panel" style={{ ...cardStyle, display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
               {[
                 {
                   label: t.profile.stat_rides,
@@ -288,7 +298,7 @@ export default function ProfilePage() {
               ].map((s, i) => (
                 <div key={i} style={{
                   padding: "20px 16px", textAlign: "center",
-                  borderRight: i < 2 ? "1px solid #1A1A1A" : "none",
+                  borderRight: i < 2 ? "1px solid rgba(255,255,255,0.05)" : "none",
                 }}>
                   <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>{s.icon}</div>
                   {s.value === null ? (
@@ -311,15 +321,14 @@ export default function ProfilePage() {
             <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", color: "#A0A0A0", textTransform: "uppercase", marginBottom: 8 }}>
               {t.profile.wallet_section}
             </p>
-            <div style={{
-              background: "#121212",
-              border: "1px solid #8B0000",
+            <div className="glass-panel" style={{
+              border: "1px solid #e8002b",
               borderRadius: 4,
               padding: "24px 20px",
               display: "flex", alignItems: "center", justifyContent: "space-between",
             }}>
               <div>
-                <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", color: "#8B0000", textTransform: "uppercase", marginBottom: 10 }}>
+                <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", color: "#e8002b", textTransform: "uppercase", marginBottom: 10 }}>
                   {t.profile.credits_title}
                 </p>
                 {loadingWallet ? (
@@ -332,12 +341,12 @@ export default function ProfilePage() {
               </div>
               <div style={{
                 width: 44, height: 44,
-                border: "1px solid #8B0000",
+                border: "1px solid #e8002b",
                 borderRadius: 4,
                 display: "flex", alignItems: "center", justifyContent: "center",
-                background: "rgba(139,0,0,0.06)",
+                background: "rgba(232,0,43,0.08)",
               }}>
-                <Wallet size={20} strokeWidth={1.5} color="#8B0000" />
+                <Wallet size={20} strokeWidth={1.5} color="#e8002b" />
               </div>
             </div>
           </div>
@@ -356,7 +365,7 @@ export default function ProfilePage() {
                   display: "flex", alignItems: "center", gap: 5,
                   padding: "5px 10px",
                   background: "transparent",
-                  border: "1px solid #1A1A1A",
+                  border: "1px solid rgba(255,255,255,0.05)",
                   borderRadius: 4,
                   color: "#A0A0A0", fontSize: 10, fontWeight: 700,
                   letterSpacing: "0.08em", textTransform: "uppercase",
@@ -365,7 +374,7 @@ export default function ProfilePage() {
                   fontFamily: "inherit",
                   transition: "border-color 150ms",
                 }}
-                onMouseEnter={e => { if (!refreshing) e.currentTarget.style.borderColor = "#8B0000" }}
+                onMouseEnter={e => { if (!refreshing) e.currentTarget.style.borderColor = "#e8002b" }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor = "#1A1A1A" }}
               >
                 <RefreshCw size={11} strokeWidth={1.5} style={{ animation: refreshing ? "spin 0.7s linear infinite" : "none" }} />
@@ -373,13 +382,13 @@ export default function ProfilePage() {
               </button>
             </div>
 
-            <div style={{ ...cardStyle, overflowX: "auto" }}>
+            <div className="glass-panel" style={{ ...cardStyle, overflowX: "auto" }}>
               {/* Table header */}
               <div className="history-grid" style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1.5fr 1fr 1fr 1fr",
                 padding: "10px 16px",
-                borderBottom: "1px solid #1A1A1A",
+                borderBottom: "1px solid rgba(255,255,255,0.05)",
                 minWidth: 360,
               }}>
                 {[
@@ -432,7 +441,7 @@ export default function ProfilePage() {
                     display: "grid",
                     gridTemplateColumns: "1fr 1.5fr 1fr 1fr 1fr",
                     padding: "12px 16px",
-                    borderBottom: i < rides.length - 1 ? "1px solid #1A1A1A" : "none",
+                    borderBottom: i < rides.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
                     alignItems: "center",
                     minWidth: 360,
                   }}
@@ -442,7 +451,7 @@ export default function ProfilePage() {
                     {ride.transport}
                   </p>
                   <p style={{ fontSize: 12, color: "#A0A0A0" }}>{ride.duration}</p>
-                  <p className="col-machine" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color: "#8B0000" }}>
+                  <p className="col-machine" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.06em", color: "#e8002b" }}>
                     {ride.machineId}
                   </p>
                   <p style={{ fontSize: 12, fontWeight: 700, color: "#FFFFFF" }}>
@@ -458,12 +467,12 @@ export default function ProfilePage() {
             <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", color: "#A0A0A0", textTransform: "uppercase", marginBottom: 8 }}>
               {t.profile.account_section}
             </p>
-            <div style={cardStyle}>
-              <div style={{ padding: "14px 16px", borderBottom: "1px solid #1A1A1A", display: "flex", justifyContent: "space-between" }}>
+            <div className="glass-panel" style={cardStyle}>
+              <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontSize: 12, color: "#A0A0A0", letterSpacing: "0.04em" }}>{t.profile.account_version}</span>
                 <span style={{ fontSize: 12, color: "#FFFFFF" }}>1.0.0</span>
               </div>
-              <div style={{ padding: "14px 16px", borderBottom: "1px solid #1A1A1A", display: "flex", justifyContent: "space-between" }}>
+              <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.05)", display: "flex", justifyContent: "space-between" }}>
                 <span style={{ fontSize: 12, color: "#A0A0A0", letterSpacing: "0.04em" }}>{t.profile.account_platform}</span>
                 <span style={{ fontSize: 12, color: "#FFFFFF" }}>Almaty Micromobility</span>
               </div>
@@ -471,7 +480,7 @@ export default function ProfilePage() {
               {userId && (
                 <div style={{ padding: "14px 16px", display: "flex", justifyContent: "space-between", gap: 12 }}>
                   <span style={{ fontSize: 12, color: "#A0A0A0", letterSpacing: "0.04em", flexShrink: 0 }}>Operator ID</span>
-                  <span style={{ fontSize: 10, color: "#333333", fontVariantNumeric: "tabular-nums", textAlign: "right", wordBreak: "break-all" }}>
+                  <span style={{ fontSize: 10, color: "#8895a5", fontVariantNumeric: "tabular-nums", textAlign: "right", wordBreak: "break-all" }}>
                     {userId}
                   </span>
                 </div>
@@ -487,9 +496,9 @@ export default function ProfilePage() {
               style={{
                 width: "100%", padding: "13px 20px",
                 background: "transparent",
-                border: "1px solid #1A1A1A",
+                border: "1px solid rgba(255,255,255,0.05)",
                 borderRadius: 4,
-                color: "#8B0000",
+                color: "#e8002b",
                 fontSize: 11, fontWeight: 700,
                 letterSpacing: "0.1em", textTransform: "uppercase",
                 cursor: loggingOut ? "not-allowed" : "pointer",
@@ -498,11 +507,11 @@ export default function ProfilePage() {
                 transition: "border-color 150ms",
                 fontFamily: "inherit",
               }}
-              onMouseEnter={e => { if (!loggingOut) e.currentTarget.style.borderColor = "#8B0000" }}
+              onMouseEnter={e => { if (!loggingOut) e.currentTarget.style.borderColor = "#e8002b" }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = "#1A1A1A" }}
             >
               {loggingOut
-                ? <div className="spinner" style={{ width: 14, height: 14, borderTopColor: "#8B0000" }} />
+                ? <div className="spinner" style={{ width: 14, height: 14, borderTopColor: "#e8002b" }} />
                 : <LogOut size={14} strokeWidth={1.5} />
               }
               {loggingOut ? t.profile.signing_out : t.profile.btn_signout}

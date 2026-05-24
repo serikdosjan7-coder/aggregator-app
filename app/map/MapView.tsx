@@ -35,10 +35,10 @@ interface MapViewProps {
 
 /* ─── Category config ──────────────────────────────────────────────────── */
 const TYPE_CONFIG: Record<TransportType, { symbol: string; bg: string; ring: string }> = {
-  scooter: { symbol: "S", bg: "#8B0000", ring: "#A30000" },
-  ebike:   { symbol: "E", bg: "#B45309", ring: "#D97706" },
+  scooter: { symbol: "S", bg: "#e8002b", ring: "#ff1a3d" },
+  ebike:   { symbol: "E", bg: "#f59e0b", ring: "#fbbf24" },
   bike:    { symbol: "B", bg: "#FFFFFF", ring: "#D4D4D4" },
-  moped:   { symbol: "M", bg: "#0F766E", ring: "#14B8A6" },
+  moped:   { symbol: "M", bg: "#00b0ff", ring: "#38bdf8" },
 }
 
 /* ─── Custom divIcon with category badge ───────────────────────────────── */
@@ -50,8 +50,8 @@ function makeIcon(
   const cfg = TYPE_CONFIG[marker.type] ?? TYPE_CONFIG.scooter
   const size = isSelected ? 40 : 30
   const fontSize = isSelected ? 16 : 12
-  const fill = isBooked ? "#B45309" : cfg.bg
-  const ring = isBooked ? "#D97706" : cfg.ring
+  const fill = isBooked ? "#f59e0b" : cfg.bg
+  const ring = isBooked ? "#fbbf24" : cfg.ring
   const textColor = marker.type === "bike" ? "#000000" : "#FFFFFF"
   const pulse = isSelected
     ? `<div style="position:absolute;inset:-6px;border-radius:50%;border:2px solid ${ring};opacity:0.6;animation:marker-pulse 1.5s ease-in-out infinite"></div>`
@@ -238,7 +238,7 @@ export default function MapView({ markers, selected, onSelect, filterKey, booked
         <FlyTo marker={selected} />
 
         {validMarkers.map((m) => {
-          const bc = m.battery > 60 ? "#22C55E" : m.battery > 30 ? "#D97706" : "#8B0000"
+          const bc = m.battery > 60 ? "#22C55E" : m.battery > 30 ? "#D97706" : "#e8002b"
           const av = m.status === "available"
           return (
             <Marker
@@ -250,7 +250,7 @@ export default function MapView({ markers, selected, onSelect, filterKey, booked
             >
               <Popup>
                 <div data-marker-id={m.id} style={{ padding: "12px 14px", minWidth: 180 }}>
-                  <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", color: TYPE_CONFIG[m.type]?.bg ?? "#8B0000", textTransform: "uppercase", marginBottom: 4 }}>
+                  <p style={{ fontSize: 9, fontWeight: 700, letterSpacing: "0.15em", color: TYPE_CONFIG[m.type]?.bg ?? "#e8002b", textTransform: "uppercase", marginBottom: 4 }}>
                     {m.type}
                   </p>
                   <p style={{ fontSize: 15, fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.02em", marginBottom: 2 }}>

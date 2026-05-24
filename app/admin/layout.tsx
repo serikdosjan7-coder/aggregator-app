@@ -39,7 +39,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (checking) {
     return (
-      <div style={{ height: "100vh", background: "#000000", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ height: "100vh", background: "#040507", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div className="spinner" />
       </div>
     )
@@ -47,7 +47,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!allowed) return null
 
   return (
-    <div style={{ minHeight: "100vh", background: "#000000", color: "#FFFFFF", display: "flex" }}>
+    <div style={{ minHeight: "100vh", background: "#040507", color: "#FFFFFF", display: "flex" }}>
 
       {sidebarOpen && (
         <div
@@ -59,16 +59,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar */}
       <aside style={{
         width: 220,
-        background: "#000000",
-        borderRight: "1px solid #1A1A1A",
+        background: "#040507",
+        borderRight: "1px solid rgba(255,255,255,0.05)",
         display: "flex",
         flexDirection: "column",
         position: "fixed",
         top: 0, bottom: 0, left: 0,
         zIndex: 200,
       }}>
-        <div style={{ padding: "20px 20px 16px", borderBottom: "1px solid #1A1A1A" }}>
-          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.25em", color: "#8B0000", textTransform: "uppercase" }}>
+        <div style={{ padding: "20px 20px 16px", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.25em", color: "#e8002b", textTransform: "uppercase" }}>
             {t.admin.wordmark}
           </p>
         </div>
@@ -86,7 +86,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   padding: "9px 12px",
                   borderRadius: 4,
                   background: active ? "#0A0000" : "transparent",
-                  border: `1px solid ${active ? "#8B0000" : "transparent"}`,
+                  border: `1px solid ${active ? "#e8002b" : "transparent"}`,
                   color: active ? "#FFFFFF" : "#A0A0A0",
                   fontSize: 11, fontWeight: 700,
                   letterSpacing: "0.1em", textTransform: "uppercase",
@@ -103,13 +103,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        <div style={{ padding: "12px 12px 20px", borderTop: "1px solid #1A1A1A", display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ padding: "12px 12px 20px", borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", flexDirection: "column", gap: 10 }}>
           <LangSwitcher />
           <Link href="/map" style={{
             display: "flex", alignItems: "center", gap: 6,
             padding: "8px 12px",
-            background: "#0A0A0A",
-            border: "1px solid #1A1A1A",
+            background: "rgba(15,17,21,0.75)",
+            border: "1px solid rgba(255,255,255,0.05)",
             borderRadius: 4,
             color: "#A0A0A0", fontSize: 10, fontWeight: 700,
             letterSpacing: "0.1em", textTransform: "uppercase",
@@ -128,10 +128,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div style={{
           display: "none",
           padding: "12px 16px",
-          borderBottom: "1px solid #1A1A1A",
+          borderBottom: "1px solid rgba(255,255,255,0.05)",
           alignItems: "center", justifyContent: "space-between",
         }} className="admin-mobile-bar">
-          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: "#8B0000", textTransform: "uppercase" }}>
+          <p style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.2em", color: "#e8002b", textTransform: "uppercase" }}>
             {t.admin.wordmark}
           </p>
           <button

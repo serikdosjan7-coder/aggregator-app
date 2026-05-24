@@ -35,18 +35,18 @@ export function LuxuryButton({ href, onClick, children, variant = "primary", sty
   const primaryStyle: React.CSSProperties = {
     ...base,
     background: hovered
-      ? "rgba(139,0,0,0.15)"
+      ? "rgba(232,0,43,0.15)"
       : "rgba(255,255,255,0.06)",
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
-    border: `1px solid ${hovered ? "#8B0000" : "rgba(255,255,255,0.15)"}`,
+    border: `1px solid ${hovered ? "#e8002b" : "rgba(255,255,255,0.15)"}`,
     color: "#FFFFFF",
   }
 
   const ghostStyle: React.CSSProperties = {
     ...base,
     background: "transparent",
-    border: `1px solid ${hovered ? "#8B0000" : "rgba(255,255,255,0.2)"}`,
+    border: `1px solid ${hovered ? "#e8002b" : "rgba(255,255,255,0.2)"}`,
     color: hovered ? "#FFFFFF" : "#A0A0A0",
   }
 

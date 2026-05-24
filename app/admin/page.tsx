@@ -28,7 +28,7 @@ const MOCK_FLEET: TransportRow[] = [
 ]
 
 const lbl: React.CSSProperties = { fontSize: 9, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "#A0A0A0" }
-const card: React.CSSProperties = { background: "#121212", border: "1px solid #1A1A1A", borderRadius: 4 }
+const card: React.CSSProperties = { background: "rgba(15,17,21,0.75)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4 }
 
 export default function AdminDashboard() {
   const { t } = useI18n()
@@ -64,7 +64,7 @@ export default function AdminDashboard() {
       <div style={{
         margin: "-32px -28px 40px",
         padding: "48px 28px 40px",
-        borderBottom: "1px solid #1A1A1A",
+        borderBottom: "1px solid rgba(255,255,255,0.05)",
         position: "relative",
         overflow: "hidden",
       }}>
@@ -74,16 +74,16 @@ export default function AdminDashboard() {
           backgroundSize: "40px 40px",
           opacity: 0.3,
         }} />
-        <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: 3, background: "#8B0000" }} />
+        <div style={{ position: "absolute", top: 0, left: 0, bottom: 0, width: 3, background: "#e8002b" }} />
         <div style={{ position: "relative" }}>
-          <p style={{ ...lbl, color: "#8B0000", marginBottom: 12 }}>{t.admin.dashboard_label}</p>
+          <p style={{ ...lbl, color: "#e8002b", marginBottom: 12 }}>{t.admin.dashboard_label}</p>
           <h1 className="heading-auto" style={{ fontSize: "clamp(1.8rem, 4vw, 3rem)", fontWeight: 700, lineHeight: 1.05, marginBottom: 16 }}>
             {t.admin.dashboard_title}
           </h1>
           <p style={{ fontSize: 13, color: "#A0A0A0" }}>
             {loading ? t.admin.loading : source === "supabase" ? t.admin.live_data : t.admin.demo_data}
             {critical > 0 && (
-              <span style={{ marginLeft: 16, color: "#8B0000", fontWeight: 700 }}>
+              <span style={{ marginLeft: 16, color: "#e8002b", fontWeight: 700 }}>
                 ! {critical} {t.admin.badge_needs_charging}
               </span>
             )}
@@ -92,16 +92,16 @@ export default function AdminDashboard() {
       </div>
 
       {/* KPI strip */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1, border: "1px solid #1A1A1A", borderRadius: 4, overflow: "hidden", marginBottom: 40 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 1, border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, overflow: "hidden", marginBottom: 40 }}>
         {[
           { label: t.admin.stat_total_fleet,  value: total,            sub: t.admin.stat_vehicles_registered },
           { label: t.admin.stat_available,    value: available,        sub: `${total ? Math.round(available/total*100) : 0}${t.admin.stat_of_fleet}`, accent: true },
           { label: t.admin.stat_active_rides, value: booked,           sub: t.admin.stat_currently_booked },
           { label: t.admin.stat_avg_battery,  value: `${avgBattery}%`, sub: t.admin.stat_fleet_average },
         ].map((s, i) => (
-          <div key={s.label} style={{ ...card, borderRadius: 0, border: "none", borderRight: i < 3 ? "1px solid #1A1A1A" : "none", padding: "20px 24px" }}>
+          <div key={s.label} style={{ ...card, borderRadius: 0, border: "none", borderRight: i < 3 ? "1px solid rgba(255,255,255,0.05)" : "none", padding: "20px 24px" }}>
             <p style={{ ...lbl, marginBottom: 10 }}>{s.label}</p>
-            <p style={{ fontSize: 32, fontWeight: 800, color: s.accent ? "#8B0000" : "#FFFFFF", letterSpacing: "-0.03em", lineHeight: 1, marginBottom: 6 }}>
+            <p style={{ fontSize: 32, fontWeight: 800, color: s.accent ? "#e8002b" : "#FFFFFF", letterSpacing: "-0.03em", lineHeight: 1, marginBottom: 6 }}>
               {s.value}
             </p>
             <p style={{ fontSize: 11, color: "#A0A0A0" }}>{s.sub}</p>
@@ -111,11 +111,11 @@ export default function AdminDashboard() {
 
       {/* Quick-access cards */}
       <p style={{ ...lbl, marginBottom: 16 }}>Quick Access</p>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 1, border: "1px solid #1A1A1A", borderRadius: 4, overflow: "hidden", marginBottom: 40 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 1, border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, overflow: "hidden", marginBottom: 40 }}>
         {QUICK_LINKS.map(({ href, icon: Icon, label, sub }, i) => (
           <Link key={href} href={href} style={{
             ...card, borderRadius: 0, border: "none",
-            borderRight: i < QUICK_LINKS.length - 1 ? "1px solid #1A1A1A" : "none",
+            borderRight: i < QUICK_LINKS.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none",
             padding: "24px 20px", textDecoration: "none",
             display: "flex", flexDirection: "column", gap: 12,
             transition: "background-color 150ms",
@@ -124,7 +124,7 @@ export default function AdminDashboard() {
           onMouseLeave={e => (e.currentTarget.style.background = "#121212")}
           >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Icon size={18} strokeWidth={1.5} color="#8B0000" />
+              <Icon size={18} strokeWidth={1.5} color="#e8002b" />
               <ArrowRight size={12} strokeWidth={1.5} color="#A0A0A0" />
             </div>
             <div>
@@ -137,18 +137,18 @@ export default function AdminDashboard() {
 
       {/* Fleet type breakdown */}
       <p style={{ ...lbl, marginBottom: 16 }}>Fleet Breakdown</p>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 1, border: "1px solid #1A1A1A", borderRadius: 4, overflow: "hidden" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 1, border: "1px solid rgba(255,255,255,0.05)", borderRadius: 4, overflow: "hidden" }}>
         {(["scooter", "ebike", "bike", "moped"] as const).map((type, i) => {
           const count = fleet.filter(v => v.type === type).length
           const avail = fleet.filter(v => v.type === type && v.status === "available").length
           const pct   = count ? Math.round(avail / count * 100) : 0
           return (
-            <div key={type} style={{ ...card, borderRadius: 0, border: "none", borderRight: i < 3 ? "1px solid #1A1A1A" : "none", padding: "20px 20px" }}>
-              <p style={{ ...lbl, marginBottom: 8 }}>{type}</p>
+            <div key={type} style={{ ...card, borderRadius: 0, border: "none", borderRight: i < 3 ? "1px solid rgba(255,255,255,0.05)" : "none", padding: "20px 20px" }}>
+              <p style={{ ...lbl, marginBottom: 8 }}>{{scooter:"Taycan Scooter",ebike:"E-Tron Bike",bike:"Bike",moped:"Urban Moped"}[type]}</p>
               <p style={{ fontSize: 26, fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.02em" }}>{count}</p>
               <p style={{ fontSize: 11, color: "#A0A0A0", marginTop: 4 }}>{avail} {t.admin.breakdown_available}</p>
               <div style={{ marginTop: 12, height: 2, background: "#1A1A1A" }}>
-                <div style={{ width: `${pct}%`, height: "100%", background: "#8B0000" }} />
+                <div style={{ width: `${pct}%`, height: "100%", background: "#e8002b" }} />
               </div>
             </div>
           )

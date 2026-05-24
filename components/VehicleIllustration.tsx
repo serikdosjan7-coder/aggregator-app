@@ -6,13 +6,14 @@ interface Props {
   type: VehicleType
   size?: number
   color?: string
+  brandColor?: string
 }
 
 /* Clean, minimal SVG illustrations — no external images required */
-export function VehicleIllustration({ type, size = 120, color = "#FFFFFF" }: Props) {
+export function VehicleIllustration({ type, size = 120, color = "#ffffff", brandColor = "#e8002b" }: Props) {
   const dim = { width: size, height: size * 0.75 }
   const s = color
-  const m = "rgba(139,0,0,0.7)"   /* accent — red glow on wheels */
+  const m = brandColor.startsWith("rgba") ? brandColor : `${brandColor}b3`  /* accent — wheel glow */
 
   if (type === "scooter" || type === "ebike") {
     return (

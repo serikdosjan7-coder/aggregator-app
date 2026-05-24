@@ -29,13 +29,13 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#000000",
+  themeColor: "#040507",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" suppressHydrationWarning className={`${inter.variable} h-full antialiased`}>
-      <body suppressHydrationWarning className="min-h-full flex flex-col">
+    <html lang="ru" suppressHydrationWarning className={`${inter.variable} h-full antialiased bg-[#040507]`}>
+      <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#040507] text-white">
         <I18nProvider>
           <ErrorBoundary>{children}</ErrorBoundary>
         </I18nProvider>

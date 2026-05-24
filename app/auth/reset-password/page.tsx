@@ -42,7 +42,7 @@ export default function ResetPasswordPage() {
   }, [isMounted])
 
   if (!isMounted) {
-    return <div style={{ background: '#000000', minHeight: '100vh' }} />
+    return <div style={{ background: '#040507', minHeight: '100vh' }} />
   }
 
   const supabase = createSupabaseBrowserClient()
@@ -119,9 +119,10 @@ export default function ResetPasswordPage() {
 
   return (
     <div
+      data-testid="reset-password-page"
       style={{
         minHeight: '100vh',
-        background: '#000000',
+        background: '#040507',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -131,19 +132,39 @@ export default function ResetPasswordPage() {
         position: 'relative',
       }}
     >
+      {/* Video background — TODO: Serik, change to your real video filename here */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        style={{
+          position: 'fixed',
+          top: 0, left: 0,
+          width: '100%', height: '100%',
+          objectFit: 'cover',
+          opacity: 0.18,
+          zIndex: 0,
+          pointerEvents: 'none',
+        }}
+      >
+        <source src="/city-night.mp4" type="video/mp4" />
+      </video>
+
       {/* Lang switcher */}
-      <div style={{ position: 'absolute', top: 20, right: 20 }}>
+      <div style={{ position: 'absolute', top: 20, right: 20, zIndex: 1 }}>
         <LangSwitcher />
       </div>
 
       <div
+        className="glass-panel"
         style={{
           width: '100%',
           maxWidth: 400,
-          background: '#121212',
-          border: '1px solid #1A1A1A',
           borderRadius: 4,
           padding: '40px 32px',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
         {/* Wordmark */}
@@ -152,7 +173,7 @@ export default function ResetPasswordPage() {
             fontSize: 10,
             fontWeight: 700,
             letterSpacing: '0.25em',
-            color: '#8B0000',
+            color: '#e8002b',
             textTransform: 'uppercase',
             marginBottom: 24,
           }}
@@ -190,7 +211,7 @@ export default function ResetPasswordPage() {
                   required
                   minLength={6}
                   style={inputStyle}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = '#8B0000')}
+                  onFocus={(e) => (e.currentTarget.style.borderColor = '#e8002b')}
                   onBlur={(e) => (e.currentTarget.style.borderColor = '#1A1A1A')}
                 />
               </div>
@@ -205,7 +226,7 @@ export default function ResetPasswordPage() {
                   required
                   minLength={6}
                   style={inputStyle}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = '#8B0000')}
+                  onFocus={(e) => (e.currentTarget.style.borderColor = '#e8002b')}
                   onBlur={(e) => (e.currentTarget.style.borderColor = '#1A1A1A')}
                 />
               </div>
@@ -213,13 +234,13 @@ export default function ResetPasswordPage() {
               {error && (
                 <div
                   style={{
-                    border: '1px solid #8B0000',
+                    border: '1px solid #e8002b',
                     borderRadius: 4,
                     padding: '10px 14px',
                     color: '#FFFFFF',
                     fontSize: 13,
                     marginBottom: 16,
-                    background: '#0A0000',
+                    background: 'rgba(232,0,43,0.08)',
                   }}
                 >
                   {error}
@@ -243,11 +264,11 @@ export default function ResetPasswordPage() {
             <div
               style={{
                 width: 40, height: 40,
-                border: '1px solid #8B0000',
+                border: '1px solid #e8002b',
                 borderRadius: 4,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 margin: '0 auto 20px',
-                fontSize: 18, color: '#8B0000',
+                fontSize: 18, color: '#e8002b',
               }}
             >
               ✓
@@ -265,7 +286,7 @@ export default function ResetPasswordPage() {
                 fontWeight: 700,
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
-                color: '#8B0000',
+                color: '#e8002b',
                 textDecoration: 'none',
               }}
             >
@@ -293,7 +314,7 @@ export default function ResetPasswordPage() {
                   placeholder="operator@ridehub.kz"
                   required
                   style={inputStyle}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = '#8B0000')}
+                  onFocus={(e) => (e.currentTarget.style.borderColor = '#e8002b')}
                   onBlur={(e) => (e.currentTarget.style.borderColor = '#1A1A1A')}
                 />
               </div>
@@ -301,13 +322,13 @@ export default function ResetPasswordPage() {
               {error && (
                 <div
                   style={{
-                    border: '1px solid #8B0000',
+                    border: '1px solid #e8002b',
                     borderRadius: 4,
                     padding: '10px 14px',
                     color: '#FFFFFF',
                     fontSize: 13,
                     marginBottom: 16,
-                    background: '#0A0000',
+                    background: 'rgba(232,0,43,0.08)',
                   }}
                 >
                   {error}

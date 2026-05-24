@@ -1,60 +1,44 @@
-import { NextResponse, type NextRequest } from "next/server"
+import { createServerClient } from "@supabase/ssr"
+import { type NextRequest, NextResponse } from "next/server"
 
-// Routes that require authentication
-const PROTECTED_ROUTES = ["/map", "/profile", "/bookings"]
-
-// Public routes — never redirect
-const PUBLIC_ROUTES = ["/", "/auth", "/login", "/register"]
+const PROTECTED = ["/dashboard", "/vehicles", "/profile"]
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // ── 1. Skip static assets and Next.js internals ────────────────────────
-  if (
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/api") ||
-    pathname.startsWith("/favicon") ||
-    pathname.match(/\.(ico|png|jpg|jpeg|svg|webp|gif|css|js|woff2?)$/)
-  ) {
+  // Only check protected routes
+  if (!PROTECTED.some(p => pathname.startsWith(p))) {
     return NextResponse.next()
   }
 
-  // ── 2. Skip public routes — never redirect ─────────────────────────────
-  if (PUBLIC_ROUTES.some(r => pathname === r || pathname.startsWith(r + "/"))) {
-    return NextResponse.next()
-  }
+  const response = NextResponse.next()
 
-  // ── 3. Only enforce auth on protected routes ───────────────────────────
-  const isProtected = PROTECTED_ROUTES.some(
-    r => pathname === r || pathname.startsWith(r + "/")
-  )
-  if (!isProtected) {
-    return NextResponse.next()
-  }
-
-  // ── 4. Check for Supabase session cookie (no network call) ─────────────
-  // Supabase stores the session in a cookie named sb-<project>-auth-token
-  // We check for its presence without making a network request to avoid
-  // timeouts and infinite redirect loops.
-  const hasSession = request.cookies.getAll().some(
-    c => c.name.startsWith("sb-") && c.name.endsWith("-auth-token")
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => request.cookies.getAll(),
+        setAll: (cookiesToSet) => {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            response.cookies.set(name, value, options)
+          })
+        },
+      },
+    }
   )
 
-  // ── 5. No session cookie → redirect to /auth ──────────────────────────
-  if (!hasSession) {
-    const redirectUrl = request.nextUrl.clone()
-    redirectUrl.pathname = "/auth"
-    redirectUrl.searchParams.set("next", pathname)
-    return NextResponse.redirect(redirectUrl)
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    const loginUrl = new URL("/auth", request.url)
+    loginUrl.searchParams.set("redirect", pathname)
+    return NextResponse.redirect(loginUrl)
   }
 
-  // ── 6. Session cookie present → allow through ─────────────────────────
-  return NextResponse.next()
+  return response
 }
 
 export const config = {
-  matcher: [
-    // Match all paths except static files
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  matcher: ["/dashboard/:path*", "/vehicles/:path*", "/profile/:path*"],
 }
