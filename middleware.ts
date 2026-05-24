@@ -3,15 +3,18 @@ import { type NextRequest, NextResponse } from "next/server"
 
 const PROTECTED = ["/dashboard", "/vehicles", "/profile"]
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Only check protected routes
   if (!PROTECTED.some(p => pathname.startsWith(p))) {
     return NextResponse.next()
   }
 
-  const response = NextResponse.next()
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,7 +31,9 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   if (!user) {
     const loginUrl = new URL("/auth", request.url)
