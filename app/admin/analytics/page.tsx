@@ -48,18 +48,42 @@ export default function AnalyticsPage() {
   const { t } = useI18n()
   const [fleet, setFleet] = useState<TransportRow[]>(MOCK_FLEET)
   const [loading, setLoading] = useState(true)
+  const [realUserCount, setRealUserCount] = useState<number | null>(null)
 
   useEffect(() => {
     const supabase = createSupabaseBrowserClient()
+
+    // Load fleet data
     supabase.from("transport").select("id,type,battery,status,price_per_hour").then(({ data, error }) => {
       if (!error && data && data.length > 0) setFleet(data as TransportRow[])
       setLoading(false)
     })
+
+    // Load real user count — tries profiles table, falls back to users table
+    const fetchUserCount = async () => {
+      // Try profiles table (most common Supabase pattern)
+      const { count: profilesCount, error: profilesErr } = await supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+      if (!profilesErr && profilesCount !== null) {
+        setRealUserCount(profilesCount)
+        return
+      }
+      // Fallback: try users table
+      const { count: usersCount, error: usersErr } = await supabase
+        .from("users")
+        .select("*", { count: "exact", head: true })
+      if (!usersErr && usersCount !== null) {
+        setRealUserCount(usersCount)
+      }
+      // If both fail — keep null, will show mock value
+    }
+    fetchUserCount()
   }, [])
 
   const totalFleetValue = fleet.reduce((s, v) => s + v.price_per_hour * 8 * 30, 0)
   const activeRides     = fleet.filter(v => v.status === "booked").length
-  const userGrowth      = 247
+  const userGrowth      = realUserCount !== null ? realUserCount : 247
   const uptime          = "99.9%"
 
   const maxRevenue = Math.max(...REVENUE_BY_TYPE.map(r => r.revenue))
@@ -101,7 +125,7 @@ export default function AnalyticsPage() {
   const KPI = [
     { label: t.admin.stat_fleet_value,  value: `${(totalFleetValue / 1000).toFixed(0)}K`, sub: t.admin.stat_fleet_value_sub,  icon: DollarSign, accent: true },
     { label: t.admin.stat_active_rides, value: activeRides,                                sub: t.admin.stat_active_rides_sub, icon: Activity },
-    { label: t.admin.stat_user_growth,  value: userGrowth,                                 sub: t.admin.stat_user_growth_sub,  icon: TrendingUp },
+    { label: t.admin.stat_user_growth,  value: userGrowth,                                 sub: realUserCount !== null ? t.admin.stat_user_growth_live ?? "registered users" : t.admin.stat_user_growth_sub,  icon: TrendingUp },
     { label: t.admin.stat_uptime,       value: uptime,                                     sub: t.admin.stat_uptime_sub,       icon: Server },
   ]
 

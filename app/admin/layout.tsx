@@ -7,6 +7,7 @@ import { LayoutDashboard, Truck, BarChart2, Bell, Users, ArrowLeft, Menu, X } fr
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 import { useI18n } from "@/lib/i18n"
 import { LangSwitcher } from "@/components/LangSwitcher"
+import { SettingsPanel } from "@/components/SettingsPanel"
 
 const NAV_ITEMS = [
   { href: "/admin",           icon: LayoutDashboard, key: "nav_dashboard" as const },
@@ -30,8 +31,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     supabase.auth.getUser().then(({ data }) => {
       const user = data.user
       if (!user) { router.replace("/auth"); return }
-      const role = user.user_metadata?.role ?? user.app_metadata?.role ?? ""
-      if (role === "admin") { setAllowed(true) }
+      const role  = user.user_metadata?.role ?? user.app_metadata?.role ?? ""
+      const isSuperAdmin = user.email === "admin@ridehub.kz"
+      if (role === "admin" || isSuperAdmin) { setAllowed(true) }
       else { router.replace("/map") }
       setChecking(false)
     })
@@ -105,6 +107,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <div style={{ padding: "12px 12px 20px", borderTop: "1px solid rgba(255,255,255,0.05)", display: "flex", flexDirection: "column", gap: 10 }}>
           <LangSwitcher />
+          <SettingsPanel variant="inline" />
           <Link href="/map" style={{
             display: "flex", alignItems: "center", gap: 6,
             padding: "8px 12px",

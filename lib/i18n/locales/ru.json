@@ -4,6 +4,7 @@
     "map": "Карта",
     "profile": "Профиль"
   },
+  
   "landing": {
     "wordmark": "RideHub · Алматы",
     "headline_1": "Городская Скорость.",
@@ -139,7 +140,14 @@
     "col_vehicle": "Транспорт",
     "history_empty": "Поездок пока нет.",
     "footer_powered": "Работает на Next.js и Supabase",
-    "footer_dev": "Разработано Сериком Досжаном"
+    "footer_dev": "Разработано Сериком Досжаном",
+    "payment_section": "Способы оплаты",
+    "payment_add": "Добавить",
+    "payment_card_number": "Номер карты",
+    "payment_save": "Сохранить",
+    "payment_empty": "Способы оплаты не добавлены",
+    "payment_default": "Основной",
+    "payment_set_default": "Сделать основным"
   },
   "admin": {
     "wordmark": "RideHub · Контроль",

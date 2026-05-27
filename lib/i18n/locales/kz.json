@@ -117,6 +117,17 @@
     "report_type_location": "Жарамсыз Орналасу",
     "report_type_other": "Басқа"
   },
+  "settings": {
+    "title": "Баптаулар",
+    "lang": "Тіл",
+    "theme": "Интерфейс тақырыбы",
+    "theme_dark": "Cyberpunk Dark",
+    "theme_light": "Жарық режим",
+    "security": "Қауіпсіздік",
+    "change_pwd": "Парольді өзгерту",
+    "pwd_sending": "Жіберілуде...",
+    "pwd_sent": "Сілтеме жіберілді ✓"
+  },
   "profile": {
     "wordmark": "RideHub",
     "section_label": "Оператор Профилі",
@@ -139,7 +150,14 @@
     "col_vehicle": "Көлік",
     "history_empty": "Жолдар жоқ.",
     "footer_powered": "Next.js және Supabase негізінде",
-    "footer_dev": "Серик Досжан жасаган"
+    "footer_dev": "Серик Досжан жасаган",
+    "payment_section": "Төлем әдістері",
+    "payment_add": "Қосу",
+    "payment_card_number": "Карта нөмірі",
+    "payment_save": "Сақтау",
+    "payment_empty": "Төлем әдісі қосылмаған",
+    "payment_default": "Негізгі",
+    "payment_set_default": "Негізгі ету"
   },
   "admin": {
     "wordmark": "RideHub · Бақылау",
@@ -198,6 +216,7 @@
     "stat_active_rides_sub": "жол үстінде",
     "stat_user_growth": "Пайдаланушы Өсімі",
     "stat_user_growth_sub": "тіркелген операторлар",
+    "stat_user_growth_live": "нақты юзерлер · базадан",
     "stat_uptime": "Жүйе Аптайм",
     "stat_uptime_sub": "соңғы 30 күн",
     "revenue_label": "Көлік Түрі бойынша Кіріс",

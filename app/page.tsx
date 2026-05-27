@@ -74,7 +74,6 @@ const NAV = [
 
 function Navbar() {
   const [scrolled, setScrolled] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
   const active = useActive()
 
   useEffect(() => {
@@ -138,21 +137,10 @@ function Navbar() {
 }
 
 /* ══════════════════════════════════════
-   HERO  — Video background
+/* ══════════════════════════════════════
+   HERO
 ══════════════════════════════════════ */
 function Hero() {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const [videoReady, setVideoReady] = useState(false)
-
-  useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    // Force play on mobile (muted autoplay policy)
-    v.muted = true
-    v.play().catch(() => {})
-    v.addEventListener("canplay", () => setVideoReady(true))
-  }, [])
-
   return (
     <section id="home" style={{
       position: "relative", minHeight: "100vh",
@@ -160,46 +148,16 @@ function Hero() {
       alignItems: "center", justifyContent: "center",
       padding: "80px 32px 120px", textAlign: "center",
       overflow: "hidden",
+      background: "transparent",
     }}>
 
-      {/* ══ VIDEO BACKGROUND ══
-          Put city-night.mp4 in /public/videos/ or /public/
-          The poster shows while video loads                   */}
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        poster="/city-night.mp4"   /* fallback poster — or swap for a JPG */
-        style={{
-          position: "absolute", inset: 0,
-          width: "100%", height: "100%",
-          objectFit: "cover",
-          pointerEvents: "none",
-          opacity: videoReady ? 0.32 : 0,
-          transition: "opacity 1.2s ease",
-          zIndex: 0,
-        }}
-      >
-        {/* Primary: file you put in /public */}
-        <source src="/city-night.mp4" type="video/mp4" />
-        {/* Fallback: CDN (loads slower, may be blocked) */}
-        <source src="https://cdn.coverr.co/videos/coverr-riding-scooter-in-the-city-at-night-5549/mp4" type="video/mp4" />
-      </video>
-
-      {/* Canvas animated BG — always visible, sits under video */}
+      {/* Canvas animated particles */}
       <CanvasBG />
 
-      {/* Gradient overlays */}
+      {/* Красный радиальный акцент */}
       <div style={{
         position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
-        background: "linear-gradient(180deg, rgba(8,9,10,.6) 0%, rgba(8,9,10,.18) 35%, rgba(8,9,10,.55) 72%, #08090a 100%)",
-      }} />
-      <div style={{
-        position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
-        background: "radial-gradient(ellipse 75% 58% at 50% 38%, rgba(232,0,43,.06) 0%, transparent 65%)",
+        background: "radial-gradient(ellipse 75% 58% at 50% 38%, rgba(232,0,43,.08) 0%, transparent 65%)",
       }} />
 
       {/* ── Content ── */}
@@ -248,12 +206,12 @@ function Hero() {
 
         {/* Buttons */}
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-          <button onClick={() => scrollTo("fleet")} style={btnRedStyle}>
+          <Link href="/auth" style={btnRedStyle}>
             Начать поездку →
-          </button>
-          <button onClick={() => scrollTo("zones")} style={btnGhostStyle}>
+          </Link>
+          <Link href="/map" style={btnGhostStyle}>
             Открыть карту
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -317,7 +275,7 @@ function CanvasBG() {
     function frame() {
       t++
       ctx.clearRect(0,0,W(),H())
-      ctx.fillStyle="#08090a"; ctx.fillRect(0,0,W(),H())
+      // НЕ заливаем фон — видео просвечивает сквозь canvas
 
       // grid
       ctx.save(); ctx.strokeStyle="rgba(255,255,255,.022)"; ctx.lineWidth=.5
@@ -397,7 +355,10 @@ const STATS = [
 function StatsBar() {
   return (
     <div style={{
-      background:C.s1, borderTop:`1px solid ${C.border}`,
+      background: "rgba(8,9,10,0.82)",
+      backdropFilter: "blur(12px)",
+      WebkitBackdropFilter: "blur(12px)",
+      borderTop:`1px solid ${C.border}`,
       borderBottom:`1px solid ${C.border}`,
       display:"flex", justifyContent:"center", flexWrap:"wrap",
     }}>
@@ -570,7 +531,7 @@ const FLEET = [
 
 function FleetSection() {
   return (
-    <section id="fleet" style={{ padding:"90px 32px" }}>
+    <section id="fleet" style={{ padding:"90px 32px", background:"rgba(8,9,10,0.78)", backdropFilter:"blur(10px)", WebkitBackdropFilter:"blur(10px)" }}>
       <div style={{ maxWidth:1100, margin:"0 auto" }}>
         <SecLabel>Флот</SecLabel>
         <SecH2>Три типа транспорта.<br /><Dim>Один аккаунт.</Dim></SecH2>
@@ -639,7 +600,7 @@ const STEPS = [
 
 function HowSection() {
   return (
-    <section id="how" style={{ background:C.s1, borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}`, padding:"90px 32px" }}>
+    <section id="how" style={{ background:"rgba(8,9,10,0.82)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)", borderTop:`1px solid ${C.border}`, borderBottom:`1px solid ${C.border}`, padding:"90px 32px" }}>
       <div style={{ maxWidth:1100,margin:"0 auto" }}>
         <SecLabel>Как это работает</SecLabel>
         <SecH2>От регистрации<br /><Dim>до поездки — 60 секунд.</Dim></SecH2>
@@ -678,7 +639,7 @@ const MAP_PINS = [
 
 function ZonesSection() {
   return (
-    <section id="zones" style={{ padding:"90px 32px" }}>
+    <section id="zones" style={{ padding:"90px 32px", background:"rgba(8,9,10,0.78)", backdropFilter:"blur(10px)", WebkitBackdropFilter:"blur(10px)" }}>
       <div style={{ maxWidth:1100,margin:"0 auto" }}>
         <SecLabel>Зоны присутствия</SecLabel>
         <SecH2>Алматы — полностью<br /><Dim>охвачен нашей сетью.</Dim></SecH2>
@@ -751,7 +712,7 @@ const PLANS = [
 
 function PricingSection() {
   return (
-    <section id="pricing" style={{ background:C.s1,borderTop:`1px solid ${C.border}`,borderBottom:`1px solid ${C.border}`,padding:"90px 32px" }}>
+    <section id="pricing" style={{ background:"rgba(8,9,10,0.82)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)", borderTop:`1px solid ${C.border}`,borderBottom:`1px solid ${C.border}`,padding:"90px 32px" }}>
       <div style={{ maxWidth:1100,margin:"0 auto" }}>
         <SecLabel>Тарифы</SecLabel>
         <SecH2>Честные цены.<br /><Dim>Никакой подписки.</Dim></SecH2>
@@ -778,11 +739,12 @@ function PricingSection() {
                   </li>
                 ))}
               </ul>
-              <button
-                style={{ width:"100%",padding:12,borderRadius:5,border:`1px solid ${p.featured?C.red:C.border3}`,background:p.featured?C.red:"transparent",color:C.w,fontSize:12,fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",cursor:"pointer",fontFamily:"inherit",transition:"all .18s" }}
-                onMouseEnter={e=>{(e.currentTarget as HTMLButtonElement).style.background=C.red;(e.currentTarget as HTMLButtonElement).style.borderColor=C.red}}
-                onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.background=p.featured?C.red:"transparent";(e.currentTarget as HTMLButtonElement).style.borderColor=p.featured?C.red:C.border3}}
-              >{p.cta}</button>
+              <Link
+                href="/auth"
+                style={{ display:"block",width:"100%",padding:12,borderRadius:5,border:`1px solid ${p.featured?C.red:C.border3}`,background:p.featured?C.red:"transparent",color:C.w,fontSize:12,fontWeight:700,letterSpacing:".1em",textTransform:"uppercase",cursor:"pointer",fontFamily:"inherit",transition:"all .18s",textDecoration:"none",textAlign:"center",boxSizing:"border-box" }}
+                onMouseEnter={e=>{(e.currentTarget as HTMLAnchorElement).style.background=C.red;(e.currentTarget as HTMLAnchorElement).style.borderColor=C.red}}
+                onMouseLeave={e=>{(e.currentTarget as HTMLAnchorElement).style.background=p.featured?C.red:"transparent";(e.currentTarget as HTMLAnchorElement).style.borderColor=p.featured?C.red:C.border3}}
+              >{p.cta}</Link>
             </div>
           ))}
         </div>
@@ -802,7 +764,7 @@ const REVIEWS = [
 
 function ReviewsSection() {
   return (
-    <section id="reviews" style={{ padding:"90px 32px" }}>
+    <section id="reviews" style={{ padding:"90px 32px", background:"rgba(8,9,10,0.78)", backdropFilter:"blur(10px)", WebkitBackdropFilter:"blur(10px)" }}>
       <div style={{ maxWidth:1100,margin:"0 auto" }}>
         <SecLabel>Отзывы</SecLabel>
         <SecH2>Что говорят<br /><Dim>те, кто уже едет.</Dim></SecH2>
@@ -838,7 +800,7 @@ function ReviewsSection() {
 ══════════════════════════════════════ */
 function FinalCTA() {
   return (
-    <div style={{ background:C.s1,borderTop:`1px solid ${C.border}`,padding:"110px 32px",textAlign:"center",position:"relative",overflow:"hidden" }}>
+    <div style={{ background:"rgba(8,9,10,0.82)", backdropFilter:"blur(12px)", WebkitBackdropFilter:"blur(12px)", borderTop:`1px solid ${C.border}`,padding:"110px 32px",textAlign:"center",position:"relative",overflow:"hidden" }}>
       <div style={{ position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",width:520,height:380,borderRadius:"50%",background:"radial-gradient(ellipse,rgba(232,0,43,.07) 0%,transparent 70%)",pointerEvents:"none" }}/>
       <div style={{ position:"relative" }}>
         <h2 style={{ fontSize:"clamp(2.4rem,5vw,4.2rem)",fontWeight:900,letterSpacing:"-.04em",lineHeight:1.05,color:C.w,marginBottom:18 }}>
@@ -861,12 +823,12 @@ function FinalCTA() {
 ══════════════════════════════════════ */
 function Footer() {
   return (
-    <footer style={{ background:C.bg,borderTop:`1px solid ${C.border}`,padding:"44px 32px",textAlign:"center" }}>
+    <footer style={{ background:"rgba(8,9,10,0.90)", backdropFilter:"blur(16px)", WebkitBackdropFilter:"blur(16px)", borderTop:`1px solid ${C.border}`,padding:"44px 32px",textAlign:"center" }}>
       <div style={{ fontSize:18,fontWeight:900,letterSpacing:".06em",marginBottom:18,color:C.w }}>
         RIDE<span style={{ color:C.red }}>HUB</span>
       </div>
       <div style={{ display:"flex",gap:22,justifyContent:"center",flexWrap:"wrap",marginBottom:14 }}>
-        {[["О нас","/about"],["Карта","/map"],["Контакты","/contacts"],["Условия","#"],["Конфиденциальность","#"],["Вакансии","#"]].map(([l,h])=>(
+        {[["О нас","/about"],["Карта","/map"],["Контакты","/contacts"],["Условия","#"]].map(([l,h])=>(
           <Link key={l} href={h} style={{ fontSize:12,color:C.gray2,letterSpacing:".04em",textDecoration:"none",transition:"color .18s" }}
             onMouseEnter={e=>(e.currentTarget.style.color=C.w)}
             onMouseLeave={e=>(e.currentTarget.style.color=C.gray2)}
@@ -921,7 +883,27 @@ function Dim({ children }: { children: React.ReactNode }) {
 ══════════════════════════════════════ */
 export default function HomePage() {
   return (
-    <div style={{ background:C.bg,color:C.w,overflowX:"hidden",fontFamily:"'Inter',-apple-system,sans-serif" }}>
+    <div style={{ background:C.bg, color:C.w, overflowX:"hidden", fontFamily:"'Inter',-apple-system,sans-serif", position:"relative" }}>
+
+      {/* ══ FIXED VIDEO BACKGROUND — как в /auth и /about ══ */}
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        style={{
+          position: "fixed",
+          top: 0, left: 0,
+          width: "100%", height: "100%",
+          objectFit: "cover",
+          opacity: 0.18,
+          zIndex: 0,
+          pointerEvents: "none",
+        }}
+      >
+        <source src="/city-night.mp4" type="video/mp4" />
+      </video>
+
       <Navbar />
       <Hero />
       <StatsBar />

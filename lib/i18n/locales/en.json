@@ -117,6 +117,17 @@
     "report_type_location": "Wrong Location",
     "report_type_other": "Other"
   },
+  "settings": {
+    "title": "Settings",
+    "lang": "Language",
+    "theme": "Interface Theme",
+    "theme_dark": "Cyberpunk Dark",
+    "theme_light": "Light Mode",
+    "security": "Security",
+    "change_pwd": "Change Password",
+    "pwd_sending": "Sending...",
+    "pwd_sent": "Link sent ✓"
+  },
   "profile": {
     "wordmark": "RideHub",
     "section_label": "Operator Profile",
@@ -139,7 +150,14 @@
     "col_vehicle": "Vehicle",
     "history_empty": "No rides yet.",
     "footer_powered": "Powered by Next.js & Supabase",
-    "footer_dev": "Developed by Serik Doszhan"
+    "footer_dev": "Developed by Serik Doszhan",
+    "payment_section": "Payment Methods",
+    "payment_add": "Add",
+    "payment_card_number": "Card Number",
+    "payment_save": "Save",
+    "payment_empty": "No payment methods added",
+    "payment_default": "Default",
+    "payment_set_default": "Set as default"
   },
   "admin": {
     "wordmark": "RideHub · Control",
@@ -198,6 +216,7 @@
     "stat_active_rides_sub": "rides in progress",
     "stat_user_growth": "User Growth",
     "stat_user_growth_sub": "registered operators",
+    "stat_user_growth_live": "real users · live from DB",
     "stat_uptime": "System Uptime",
     "stat_uptime_sub": "last 30 days",
     "revenue_label": "Revenue by Vehicle Type",

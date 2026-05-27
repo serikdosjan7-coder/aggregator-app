@@ -242,9 +242,43 @@ export default function MapPage() {
     const dMin = Math.max(1, Math.ceil(rideElapsed / 60))
     const cost = Math.round(dMin * (activeRide.pricePerHour / 60))
     if (supabase && userId) {
-      await supabase.from("user_trips").insert({ user_id: userId, vehicle_id: activeRide.id, transport_name: activeRide.name, machine_id: activeRide.id, duration_minutes: dMin, cost, created_at: new Date().toISOString() })
+      const now = new Date().toISOString()
+      const startTime = new Date(activeRide.startedAt).toISOString()
+
+      // Пишем в user_trips (для профиля)
+      await supabase.from("user_trips").insert({
+        user_id: userId,
+        vehicle_id: activeRide.id,
+        transport_name: activeRide.name,
+        machine_id: activeRide.id,
+        duration_minutes: dMin,
+        cost,
+        created_at: now,
+      })
+
+      // Пишем в rides (основная таблица биллинга)
+      await supabase.from("rides").insert({
+        user_id: userId,
+        vehicle_id: activeRide.id,
+        start_time: startTime,
+        end_time: now,
+        duration_minutes: dMin,
+        total_price: cost,
+        status: "completed",
+        created_at: now,
+      })
+
+      // Списываем с кошелька
       const { data: w } = await supabase.from("user_wallets").select("balance").eq("user_id", userId).maybeSingle()
-      await supabase.from("user_wallets").upsert({ user_id: userId, balance: Math.max(0, Number(w?.balance ?? 0) - cost) }, { onConflict: "user_id" })
+      await supabase.from("user_wallets").upsert(
+        { user_id: userId, balance: Math.max(0, Number(w?.balance ?? 0) - cost) },
+        { onConflict: "user_id" }
+      )
+
+      // Обновляем баланс в profiles тоже (если есть колонка balance)
+      await supabase.from("profiles")
+        .update({ balance: Math.max(0, Number(w?.balance ?? 0) - cost) })
+        .eq("id", userId)
     }
     setActiveRide(null); setRideElapsed(0); setFinishing(false)
     showToast(`${t.map.ride_finished ?? "Ride finished."} ${cost.toLocaleString("ru-RU")} \u20B8`)

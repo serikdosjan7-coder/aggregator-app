@@ -3,6 +3,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ErrorBoundary } from "./error-boundary"
 import { I18nProvider } from "@/lib/i18n"
+import { ThemeProvider } from "@/lib/theme"
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],
@@ -37,7 +38,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ru" suppressHydrationWarning className={`${inter.variable} h-full antialiased bg-[#040507]`}>
       <body suppressHydrationWarning className="min-h-full flex flex-col bg-[#040507] text-white">
         <I18nProvider>
-          <ErrorBoundary>{children}</ErrorBoundary>
+          <ThemeProvider>
+            <ErrorBoundary>{children}</ErrorBoundary>
+          </ThemeProvider>
         </I18nProvider>
       </body>
     </html>

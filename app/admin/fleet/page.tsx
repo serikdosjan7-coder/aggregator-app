@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { createSupabaseBrowserClient } from "@/lib/supabase/client"
 import { useI18n } from "@/lib/i18n"
+import AdminFleetMap from "@/components/AdminFleetMap"
 
 interface TransportRow {
   id: string
@@ -141,8 +142,31 @@ export default function FleetPage() {
         </p>
       </div>
 
-      {/* Critical battery alert banner */}
-      {critical.length > 0 && (
+      {/* ── Live Fleet Map ── */}
+      <div style={{ marginBottom: 28 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <p style={{ ...lbl }}>Live Fleet Map</p>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+            {/* Legend */}
+            {[
+              { symbol: "S", color: "#e8002b", label: "Scooter" },
+              { symbol: "E", color: "#f59e0b", label: "E-Bike" },
+              { symbol: "B", color: "#FFFFFF", label: "Bike" },
+              { symbol: "M", color: "#00b0ff", label: "Moped" },
+            ].map(item => (
+              <div key={item.symbol} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                <div style={{ width: 16, height: 16, borderRadius: "50%", background: item.color, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <span style={{ fontSize: 8, fontWeight: 800, color: item.symbol === "B" ? "#000" : "#FFF" }}>{item.symbol}</span>
+                </div>
+                <span style={{ fontSize: 10, color: "#A0A0A0" }}>{item.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <AdminFleetMap vehicles={fleet} height={400} />
+      </div>
+
+      {/* Critical battery alert banner */}      {critical.length > 0 && (
         <div style={{ padding: "14px 20px", marginBottom: 24, background: "#0A0000", border: "1px solid #8B0000", borderRadius: 4, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
           <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.15em", color: "#8B0000", textTransform: "uppercase" }}>
             ! {critical.length} {t.admin.badge_needs_charging}

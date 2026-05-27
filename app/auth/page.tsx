@@ -30,7 +30,7 @@ export default function AuthPage() {
     setError(null)
     setMessage(null)
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
       setError(
@@ -39,6 +39,12 @@ export default function AuthPage() {
           : error.message,
       )
       setLoading(false)
+      return
+    }
+
+    // Super-admin redirect
+    if (data.user?.email === 'admin@ridehub.kz') {
+      window.location.href = '/admin'
       return
     }
 
